@@ -1,0 +1,647 @@
+{
+ "base_val_ndcg": 0.25838834769797236,
+ "rows": [
+  {
+   "relation": "user activity",
+   "window": 1,
+   "val_ndcg": 0.25838834769797236,
+   "gain": 0.0,
+   "feature": "user_sta_w1_count",
+   "seconds": 2.4
+  },
+  {
+   "relation": "user activity",
+   "window": 3,
+   "val_ndcg": 0.2615596240188049,
+   "gain": 0.003171276320832528,
+   "feature": "user_sta_w3_count",
+   "seconds": 3.4
+  },
+  {
+   "relation": "user activity",
+   "window": 7,
+   "val_ndcg": 0.2618339715182203,
+   "gain": 0.003445623820247934,
+   "feature": "user_sta_w7_count",
+   "seconds": 2.8
+  },
+  {
+   "relation": "user activity",
+   "window": 14,
+   "val_ndcg": 0.26206284913101235,
+   "gain": 0.0036745014330399894,
+   "feature": "user_sta_w14_count",
+   "seconds": 2.9
+  },
+  {
+   "relation": "user activity",
+   "window": 30,
+   "val_ndcg": 0.26304210097047726,
+   "gain": 0.00465375327250489,
+   "feature": "user_sta_w30_count",
+   "seconds": 3.0
+  },
+  {
+   "relation": "user activity",
+   "window": 60,
+   "val_ndcg": 0.259240827003165,
+   "gain": 0.0008524793051926105,
+   "feature": "user_sta_w60_count",
+   "seconds": 3.0
+  },
+  {
+   "relation": "user activity",
+   "window": 90,
+   "val_ndcg": 0.257804727861941,
+   "gain": -0.0005836198360313904,
+   "feature": "user_sta_w90_count",
+   "seconds": 1.9
+  },
+  {
+   "relation": "user activity",
+   "window": 180,
+   "val_ndcg": 0.26234323030932494,
+   "gain": 0.003954882611352573,
+   "feature": "user_sta_w180_count",
+   "seconds": 2.9
+  },
+  {
+   "relation": "user activity",
+   "window": null,
+   "val_ndcg": 0.26234323030932494,
+   "gain": 0.003954882611352573,
+   "feature": "user_sta_all_count",
+   "seconds": 2.9
+  },
+  {
+   "relation": "user watches",
+   "window": 1,
+   "val_ndcg": 0.25838834769797236,
+   "gain": 0.0,
+   "feature": "user_wat_w1_count",
+   "seconds": 2.4
+  },
+  {
+   "relation": "user watches",
+   "window": 3,
+   "val_ndcg": 0.2578242339224173,
+   "gain": -0.0005641137755550418,
+   "feature": "user_wat_w3_count",
+   "seconds": 1.7
+  },
+  {
+   "relation": "user watches",
+   "window": 7,
+   "val_ndcg": 0.261153678873256,
+   "gain": 0.0027653311752836585,
+   "feature": "user_wat_w7_count",
+   "seconds": 3.0
+  },
+  {
+   "relation": "user watches",
+   "window": 14,
+   "val_ndcg": 0.2623493799744583,
+   "gain": 0.003961032276485921,
+   "feature": "user_wat_w14_count",
+   "seconds": 2.7
+  },
+  {
+   "relation": "user watches",
+   "window": 30,
+   "val_ndcg": 0.26185918105193084,
+   "gain": 0.00347083335395848,
+   "feature": "user_wat_w30_count",
+   "seconds": 2.9
+  },
+  {
+   "relation": "user watches",
+   "window": 60,
+   "val_ndcg": 0.26431066219496374,
+   "gain": 0.005922314496991377,
+   "feature": "user_wat_w60_count",
+   "seconds": 2.4
+  },
+  {
+   "relation": "user watches",
+   "window": 90,
+   "val_ndcg": 0.2649765584946108,
+   "gain": 0.006588210796638461,
+   "feature": "user_wat_w90_count",
+   "seconds": 3.3
+  },
+  {
+   "relation": "user watches",
+   "window": 180,
+   "val_ndcg": 0.2604392346722638,
+   "gain": 0.002050886974291455,
+   "feature": "user_wat_w180_count",
+   "seconds": 2.0
+  },
+  {
+   "relation": "user watches",
+   "window": null,
+   "val_ndcg": 0.2604392346722638,
+   "gain": 0.002050886974291455,
+   "feature": "user_wat_all_count",
+   "seconds": 2.0
+  },
+  {
+   "relation": "item popularity",
+   "window": 1,
+   "val_ndcg": 0.25838834769797236,
+   "gain": 0.0,
+   "feature": "item_sta_w1_count",
+   "seconds": 2.4
+  },
+  {
+   "relation": "item popularity",
+   "window": 3,
+   "val_ndcg": 0.27004315541679014,
+   "gain": 0.011654807718817772,
+   "feature": "item_sta_w3_count",
+   "seconds": 2.6
+  },
+  {
+   "relation": "item popularity",
+   "window": 7,
+   "val_ndcg": 0.2811539706324737,
+   "gain": 0.02276562293450135,
+   "feature": "item_sta_w7_count",
+   "seconds": 2.3
+  },
+  {
+   "relation": "item popularity",
+   "window": 14,
+   "val_ndcg": 0.2649278486075893,
+   "gain": 0.006539500909616913,
+   "feature": "item_sta_w14_count",
+   "seconds": 2.8
+  },
+  {
+   "relation": "item popularity",
+   "window": 30,
+   "val_ndcg": 0.2639001083087583,
+   "gain": 0.005511760610785954,
+   "feature": "item_sta_w30_count",
+   "seconds": 3.5
+  },
+  {
+   "relation": "item popularity",
+   "window": 60,
+   "val_ndcg": 0.27160007506710737,
+   "gain": 0.013211727369135007,
+   "feature": "item_sta_w60_count",
+   "seconds": 3.5
+  },
+  {
+   "relation": "item popularity",
+   "window": 90,
+   "val_ndcg": 0.27250780579161976,
+   "gain": 0.014119458093647397,
+   "feature": "item_sta_w90_count",
+   "seconds": 2.3
+  },
+  {
+   "relation": "item popularity",
+   "window": 180,
+   "val_ndcg": 0.2744263026716955,
+   "gain": 0.016037954973723123,
+   "feature": "item_sta_w180_count",
+   "seconds": 3.0
+  },
+  {
+   "relation": "item popularity",
+   "window": null,
+   "val_ndcg": 0.2744263026716955,
+   "gain": 0.016037954973723123,
+   "feature": "item_sta_all_count",
+   "seconds": 3.1
+  },
+  {
+   "relation": "item watches",
+   "window": 1,
+   "val_ndcg": 0.25838834769797236,
+   "gain": 0.0,
+   "feature": "item_wat_w1_count",
+   "seconds": 2.5
+  },
+  {
+   "relation": "item watches",
+   "window": 3,
+   "val_ndcg": 0.26643198372847493,
+   "gain": 0.008043636030502566,
+   "feature": "item_wat_w3_count",
+   "seconds": 2.1
+  },
+  {
+   "relation": "item watches",
+   "window": 7,
+   "val_ndcg": 0.2725603553360091,
+   "gain": 0.014172007638036721,
+   "feature": "item_wat_w7_count",
+   "seconds": 2.3
+  },
+  {
+   "relation": "item watches",
+   "window": 14,
+   "val_ndcg": 0.2511445687731417,
+   "gain": -0.0072437789248306905,
+   "feature": "item_wat_w14_count",
+   "seconds": 3.4
+  },
+  {
+   "relation": "item watches",
+   "window": 30,
+   "val_ndcg": 0.26104919872672244,
+   "gain": 0.0026608510287500775,
+   "feature": "item_wat_w30_count",
+   "seconds": 2.6
+  },
+  {
+   "relation": "item watches",
+   "window": 60,
+   "val_ndcg": 0.27036995325522034,
+   "gain": 0.011981605557247976,
+   "feature": "item_wat_w60_count",
+   "seconds": 3.5
+  },
+  {
+   "relation": "item watches",
+   "window": 90,
+   "val_ndcg": 0.26827774302045887,
+   "gain": 0.009889395322486505,
+   "feature": "item_wat_w90_count",
+   "seconds": 2.9
+  },
+  {
+   "relation": "item watches",
+   "window": 180,
+   "val_ndcg": 0.27105209125791196,
+   "gain": 0.0126637435599396,
+   "feature": "item_wat_w180_count",
+   "seconds": 3.9
+  },
+  {
+   "relation": "item watches",
+   "window": null,
+   "val_ndcg": 0.27105209125791196,
+   "gain": 0.0126637435599396,
+   "feature": "item_wat_all_count",
+   "seconds": 3.6
+  },
+  {
+   "relation": "user x genre",
+   "window": 1,
+   "val_ndcg": 0.25838834769797236,
+   "gain": 0.0,
+   "feature": "attr_genr_sta_w1_count_sum",
+   "seconds": 2.7
+  },
+  {
+   "relation": "user x genre",
+   "window": 3,
+   "val_ndcg": 0.26120889525153085,
+   "gain": 0.0028205475535584834,
+   "feature": "attr_genr_sta_w3_count_sum",
+   "seconds": 2.6
+  },
+  {
+   "relation": "user x genre",
+   "window": 7,
+   "val_ndcg": 0.2619858065243763,
+   "gain": 0.003597458826403943,
+   "feature": "attr_genr_sta_w7_count_sum",
+   "seconds": 3.2
+  },
+  {
+   "relation": "user x genre",
+   "window": 14,
+   "val_ndcg": 0.2619045413283819,
+   "gain": 0.0035161936304095587,
+   "feature": "attr_genr_sta_w14_count_sum",
+   "seconds": 3.2
+  },
+  {
+   "relation": "user x genre",
+   "window": 30,
+   "val_ndcg": 0.26120490073965286,
+   "gain": 0.002816553041680492,
+   "feature": "attr_genr_sta_w30_count_sum",
+   "seconds": 2.4
+  },
+  {
+   "relation": "user x genre",
+   "window": 60,
+   "val_ndcg": 0.2640095268244986,
+   "gain": 0.00562117912652621,
+   "feature": "attr_genr_sta_w60_count_sum",
+   "seconds": 2.9
+  },
+  {
+   "relation": "user x genre",
+   "window": 90,
+   "val_ndcg": 0.2639193819240809,
+   "gain": 0.005531034226108511,
+   "feature": "attr_genr_sta_w90_count_sum",
+   "seconds": 2.3
+  },
+  {
+   "relation": "user x genre",
+   "window": 180,
+   "val_ndcg": 0.2676525206329057,
+   "gain": 0.009264172934933312,
+   "feature": "attr_genr_sta_w180_count_sum",
+   "seconds": 3.1
+  },
+  {
+   "relation": "user x genre",
+   "window": null,
+   "val_ndcg": 0.2676525206329057,
+   "gain": 0.009264172934933312,
+   "feature": "attr_genr_sta_all_count_sum",
+   "seconds": 3.1
+  },
+  {
+   "relation": "user x director",
+   "window": 1,
+   "val_ndcg": 0.25838834769797236,
+   "gain": 0.0,
+   "feature": "attr_dire_sta_w1_count_sum",
+   "seconds": 2.5
+  },
+  {
+   "relation": "user x director",
+   "window": 3,
+   "val_ndcg": 0.26273462264345765,
+   "gain": 0.0043462749454852845,
+   "feature": "attr_dire_sta_w3_count_sum",
+   "seconds": 3.0
+  },
+  {
+   "relation": "user x director",
+   "window": 7,
+   "val_ndcg": 0.26220562123000746,
+   "gain": 0.0038172735320350926,
+   "feature": "attr_dire_sta_w7_count_sum",
+   "seconds": 2.1
+  },
+  {
+   "relation": "user x director",
+   "window": 14,
+   "val_ndcg": 0.2616242157348209,
+   "gain": 0.003235868036848555,
+   "feature": "attr_dire_sta_w14_count_sum",
+   "seconds": 2.4
+  },
+  {
+   "relation": "user x director",
+   "window": 30,
+   "val_ndcg": 0.261168886837385,
+   "gain": 0.002780539139412619,
+   "feature": "attr_dire_sta_w30_count_sum",
+   "seconds": 2.1
+  },
+  {
+   "relation": "user x director",
+   "window": 60,
+   "val_ndcg": 0.26210303437788274,
+   "gain": 0.003714686679910373,
+   "feature": "attr_dire_sta_w60_count_sum",
+   "seconds": 2.7
+  },
+  {
+   "relation": "user x director",
+   "window": 90,
+   "val_ndcg": 0.26280552731394513,
+   "gain": 0.004417179615972766,
+   "feature": "attr_dire_sta_w90_count_sum",
+   "seconds": 2.2
+  },
+  {
+   "relation": "user x director",
+   "window": 180,
+   "val_ndcg": 0.26204407853854944,
+   "gain": 0.003655730840577076,
+   "feature": "attr_dire_sta_w180_count_sum",
+   "seconds": 3.6
+  },
+  {
+   "relation": "user x director",
+   "window": null,
+   "val_ndcg": 0.26204407853854944,
+   "gain": 0.003655730840577076,
+   "feature": "attr_dire_sta_all_count_sum",
+   "seconds": 3.5
+  },
+  {
+   "relation": "user x keyword",
+   "window": 1,
+   "val_ndcg": 0.2611709430793747,
+   "gain": 0.002782595381402353,
+   "feature": "attr_keyw_sta_w1_count_sum",
+   "seconds": 3.3
+  },
+  {
+   "relation": "user x keyword",
+   "window": 3,
+   "val_ndcg": 0.2593983193060353,
+   "gain": 0.0010099716080629317,
+   "feature": "attr_keyw_sta_w3_count_sum",
+   "seconds": 3.2
+  },
+  {
+   "relation": "user x keyword",
+   "window": 7,
+   "val_ndcg": 0.26043909915607605,
+   "gain": 0.0020507514581036834,
+   "feature": "attr_keyw_sta_w7_count_sum",
+   "seconds": 4.3
+  },
+  {
+   "relation": "user x keyword",
+   "window": 14,
+   "val_ndcg": 0.2624285778704427,
+   "gain": 0.004040230172470349,
+   "feature": "attr_keyw_sta_w14_count_sum",
+   "seconds": 3.7
+  },
+  {
+   "relation": "user x keyword",
+   "window": 30,
+   "val_ndcg": 0.2612808064719564,
+   "gain": 0.00289245877398403,
+   "feature": "attr_keyw_sta_w30_count_sum",
+   "seconds": 4.0
+  },
+  {
+   "relation": "user x keyword",
+   "window": 60,
+   "val_ndcg": 0.26585721462635625,
+   "gain": 0.007468866928383888,
+   "feature": "attr_keyw_sta_w60_count_sum",
+   "seconds": 5.2
+  },
+  {
+   "relation": "user x keyword",
+   "window": 90,
+   "val_ndcg": 0.2648292103893651,
+   "gain": 0.0064408626913927125,
+   "feature": "attr_keyw_sta_w90_count_sum",
+   "seconds": 5.8
+  },
+  {
+   "relation": "user x keyword",
+   "window": 180,
+   "val_ndcg": 0.2635210645771729,
+   "gain": 0.005132716879200527,
+   "feature": "attr_keyw_sta_w180_count_sum",
+   "seconds": 6.8
+  },
+  {
+   "relation": "user x keyword",
+   "window": null,
+   "val_ndcg": 0.2635210645771729,
+   "gain": 0.005132716879200527,
+   "feature": "attr_keyw_sta_all_count_sum",
+   "seconds": 5.4
+  },
+  {
+   "relation": "genre popularity",
+   "window": 1,
+   "val_ndcg": 0.25838834769797236,
+   "gain": 0.0,
+   "feature": "attr_item_genr_sta_w1_count_mea",
+   "seconds": 2.6
+  },
+  {
+   "relation": "genre popularity",
+   "window": 3,
+   "val_ndcg": 0.2568073742966301,
+   "gain": -0.0015809734013422783,
+   "feature": "attr_item_genr_sta_w3_count_mea",
+   "seconds": 1.8
+  },
+  {
+   "relation": "genre popularity",
+   "window": 7,
+   "val_ndcg": 0.2604136607878824,
+   "gain": 0.0020253130899100524,
+   "feature": "attr_item_genr_sta_w7_count_mea",
+   "seconds": 2.2
+  },
+  {
+   "relation": "genre popularity",
+   "window": 14,
+   "val_ndcg": 0.25710993006735827,
+   "gain": -0.0012784176306140926,
+   "feature": "attr_item_genr_sta_w14_count_mea",
+   "seconds": 2.4
+  },
+  {
+   "relation": "genre popularity",
+   "window": 30,
+   "val_ndcg": 0.26116222989767035,
+   "gain": 0.0027738821996979857,
+   "feature": "attr_item_genr_sta_w30_count_mea",
+   "seconds": 3.8
+  },
+  {
+   "relation": "genre popularity",
+   "window": 60,
+   "val_ndcg": 0.26080356071738736,
+   "gain": 0.0024152130194149968,
+   "feature": "attr_item_genr_sta_w60_count_mea",
+   "seconds": 2.6
+  },
+  {
+   "relation": "genre popularity",
+   "window": 90,
+   "val_ndcg": 0.26039579894152026,
+   "gain": 0.0020074512435478975,
+   "feature": "attr_item_genr_sta_w90_count_mea",
+   "seconds": 2.0
+  },
+  {
+   "relation": "genre popularity",
+   "window": 180,
+   "val_ndcg": 0.26556432658844853,
+   "gain": 0.0071759788904761646,
+   "feature": "attr_item_genr_sta_w180_count_mea",
+   "seconds": 2.1
+  },
+  {
+   "relation": "genre popularity",
+   "window": null,
+   "val_ndcg": 0.26556432658844853,
+   "gain": 0.0071759788904761646,
+   "feature": "attr_item_genr_sta_all_count_mea",
+   "seconds": 2.1
+  }
+ ],
+ "best_per_relation": {
+  "user activity": {
+   "relation": "user activity",
+   "window": 30,
+   "val_ndcg": 0.26304210097047726,
+   "gain": 0.00465375327250489,
+   "feature": "user_sta_w30_count",
+   "seconds": 3.0
+  },
+  "user watches": {
+   "relation": "user watches",
+   "window": 90,
+   "val_ndcg": 0.2649765584946108,
+   "gain": 0.006588210796638461,
+   "feature": "user_wat_w90_count",
+   "seconds": 3.3
+  },
+  "item popularity": {
+   "relation": "item popularity",
+   "window": 7,
+   "val_ndcg": 0.2811539706324737,
+   "gain": 0.02276562293450135,
+   "feature": "item_sta_w7_count",
+   "seconds": 2.3
+  },
+  "item watches": {
+   "relation": "item watches",
+   "window": 7,
+   "val_ndcg": 0.2725603553360091,
+   "gain": 0.014172007638036721,
+   "feature": "item_wat_w7_count",
+   "seconds": 2.3
+  },
+  "user x genre": {
+   "relation": "user x genre",
+   "window": 180,
+   "val_ndcg": 0.2676525206329057,
+   "gain": 0.009264172934933312,
+   "feature": "attr_genr_sta_w180_count_sum",
+   "seconds": 3.1
+  },
+  "user x director": {
+   "relation": "user x director",
+   "window": 90,
+   "val_ndcg": 0.26280552731394513,
+   "gain": 0.004417179615972766,
+   "feature": "attr_dire_sta_w90_count_sum",
+   "seconds": 2.2
+  },
+  "user x keyword": {
+   "relation": "user x keyword",
+   "window": 60,
+   "val_ndcg": 0.26585721462635625,
+   "gain": 0.007468866928383888,
+   "feature": "attr_keyw_sta_w60_count_sum",
+   "seconds": 5.2
+  },
+  "genre popularity": {
+   "relation": "genre popularity",
+   "window": 180,
+   "val_ndcg": 0.26556432658844853,
+   "gain": 0.0071759788904761646,
+   "feature": "attr_item_genr_sta_w180_count_mea",
+   "seconds": 2.1
+  }
+ }
+}

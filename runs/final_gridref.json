@@ -1447,6 +1447,167 @@
      "gain": 3176.2608165740967
     }
    ]
+  },
+  "BASE+AUTO+KERNEL": {
+   "n_programs": 82,
+   "from": "AUTO:llm_recorded:s0",
+   "n_features": 105,
+   "best_iteration": 96,
+   "feature_seconds": 52.1,
+   "train_seconds": 19.25,
+   "gain_share_of_dsl_features": 0.8284,
+   "val": {
+    "ndcg@10": 0.2963910639758185,
+    "map@10": 0.2180527172632436,
+    "recall@10": 0.46952354662880974,
+    "hit@10": 0.582995951417004,
+    "ndcg@10_abs": 0.15297413868627446,
+    "recall@10_abs": 0.22046100085057607,
+    "auc": 0.7901021283166735,
+    "logloss": 0.3059472143650055,
+    "groups": 1235
+   },
+   "test": {
+    "ndcg@10": 0.28489902884190765,
+    "map@10": 0.20986129578204082,
+    "recall@10": 0.4596295655507142,
+    "hit@10": 0.562957897748465,
+    "ndcg@10_abs": 0.13675792987068447,
+    "recall@10_abs": 0.19958911993698342,
+    "auc": 0.7886729529958922,
+    "logloss": 0.29654988646507263,
+    "groups": 2311
+   },
+   "test_per_fold": [
+    {
+     "ndcg@10": 0.28240479138152746,
+     "map@10": 0.20744035583615306,
+     "recall@10": 0.4620806042599803,
+     "hit@10": 0.561525129982669,
+     "groups": 1154,
+     "ndcg@10_abs": 0.13279334311897456,
+     "recall@10_abs": 0.19738222932747607,
+     "groups_abs": 1967,
+     "auc": 0.7862732790458444,
+     "logloss": 0.29587122797966003,
+     "T": "2021-08-09"
+    },
+    {
+     "ndcg@10": 0.2873932663022879,
+     "map@10": 0.21228223572792862,
+     "recall@10": 0.45717852684144816,
+     "hit@10": 0.564390665514261,
+     "groups": 1157,
+     "ndcg@10_abs": 0.1407225166223944,
+     "recall@10_abs": 0.2017960105464908,
+     "groups_abs": 1863,
+     "auc": 0.79107262694594,
+     "logloss": 0.29722854495048523,
+     "T": "2021-08-16"
+    }
+   ],
+   "top_features": [
+    {
+     "feature": "mul__user_sta_all_count_log1p__item_sta_w3_count_z_in_group",
+     "gain": 58457.22248649597
+    },
+    {
+     "feature": "item_sta_w3_count_rank_in_group",
+     "gain": 40677.1001367569
+    },
+    {
+     "feature": "b_rrf",
+     "gain": 22819.88542175293
+    },
+    {
+     "feature": "item_sta_w7_count_z_in_group",
+     "gain": 22430.088958740234
+    },
+    {
+     "feature": "b_als_dot",
+     "gain": 14412.19422340393
+    },
+    {
+     "feature": "item_sta_w3_trend",
+     "gain": 12262.805368423462
+    },
+    {
+     "feature": "dec_item_sta_h0.632_z_in_group",
+     "gain": 9550.413262367249
+    },
+    {
+     "feature": "dec_item_fin_h1.885_z_in_group",
+     "gain": 8316.409442901611
+    },
+    {
+     "feature": "b_rank_covis",
+     "gain": 6841.085548400879
+    },
+    {
+     "feature": "ratio__item_sta_w3_count__item_sta_all_count",
+     "gain": 6034.3030462265015
+    },
+    {
+     "feature": "item_sta_w7_count_rank_in_group",
+     "gain": 5757.057910919189
+    },
+    {
+     "feature": "ratio__item_sta_w3_count__item_sta_w30_count",
+     "gain": 4157.879794120789
+    },
+    {
+     "feature": "b_covis_score",
+     "gain": 3994.033794403076
+    },
+    {
+     "feature": "mul__attr_genr_sta_all_count_sum_share_user__item_sta_w7_count_log1p",
+     "gain": 3935.7356967926025
+    },
+    {
+     "feature": "ratio__item_sta_w3_count__item_sta_w7_count",
+     "gain": 3400.2636671066284
+    },
+    {
+     "feature": "dec_attr_genr_sta_h688.456_sum",
+     "gain": 3363.4668102264404
+    },
+    {
+     "feature": "attr_coun_sta_all_count_max_share_user",
+     "gain": 3283.1593523025513
+    },
+    {
+     "feature": "attr_cont_sta_all_count_max_share_user",
+     "gain": 3132.031792640686
+    },
+    {
+     "feature": "ratio__item_sta_w7_count__item_sta_all_count",
+     "gain": 2772.446990966797
+    },
+    {
+     "feature": "attr_acto_sta_w30_count_sum_z_in_group",
+     "gain": 2613.991165161133
+    },
+    {
+     "feature": "attr_acto_sta_all_count_sum_rank_in_group",
+     "gain": 2579.8710746765137
+    },
+    {
+     "feature": "ratio__item_sta_w7_count__item_sta_w30_count",
+     "gain": 2573.933000564575
+    },
+    {
+     "feature": "item_sta_w3_nuniq_user_per_day",
+     "gain": 2554.43772315979
+    },
+    {
+     "feature": "item_sta_w3_sum_dur_rank_in_group",
+     "gain": 2507.1035661697388
+    },
+    {
+     "feature": "b_als_score",
+     "gain": 2417.5201864242554
+    }
+   ]
   }
  },
  "paired_vs_reference": {}
