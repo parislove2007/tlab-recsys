@@ -46,12 +46,15 @@ if auto:
 
 users = D.sample_users(SCALES[a.scale])
 b = Bundle(users)
+cached = RUNS / f"ranker_params_{a.scale}.json"
+best_params = json.loads(cached.read_text())["params"] if cached.exists() else None
+print("ranker settings:", best_params)
 res, pu = {}, {}
 for label, progs in sets.items():
     t0 = time.time()
     parts = b.matrix(progs)
     tf = time.time() - t0
-    m, tt, _ = rank.train_rank(parts)
+    m, tt, _ = rank.train_rank(parts, params=best_params)
     val, _, _ = rank.evaluate(m, b, parts, "val")
     test, _, per = rank.evaluate(m, b, parts, "test")
     imp = rank.feature_importance(m)

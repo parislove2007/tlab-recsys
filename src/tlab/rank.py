@@ -37,7 +37,10 @@ def _stack(parts, split):
         sizes = cand.group_by("user_id", maintain_order=True).len()["len"].to_numpy()
         groups.append(sizes)
         keys.append(cand.select("user_id", "item_id").with_columns(pl.lit(str(T)).alias("T")))
-    return (pl.concat(Xs), np.concatenate(ys), np.concatenate(groups), pl.concat(keys))
+    X = pl.concat(Xs)
+    Xs.clear()
+    gc.collect()
+    return (X, np.concatenate(ys), np.concatenate(groups), pl.concat(keys))
 
 
 def train_rank(parts, params=None, num_boost_round=800, early_stopping=60, quiet=True):

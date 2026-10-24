@@ -47,7 +47,8 @@ def build_relation(engine, cand, anchor, via, event):
     """Key-level daily counts S and the row-to-key assignment P."""
     df = engine.u[event] if anchor in ("user", "attr") else engine.g[event]
     df = df.filter(pl.col("age") < MAX_AGE)
-    rows = cand.with_row_index("_rid").select("_rid", "user_id", "item_id")
+    rows = cand.with_row_index("_rid").select(
+        "_rid", pl.col("user_id").cast(pl.Int32), pl.col("item_id").cast(pl.Int32))
 
     if anchor == "user":
         keys = rows["user_id"].unique().sort()
@@ -118,8 +119,9 @@ class FoldTensors:
 class KernelRanker(nn.Module):
     def __init__(self, n_rel, n_kernels=2, hidden=48, init_halflife=(7.0, 60.0)):
         super().__init__()
-        init = np.log(np.expm1(np.log(2.0) / np.array(init_halflife, dtype=np.float32)))
-        self.raw = nn.Parameter(torch.tensor(np.tile(init, (n_rel, 1))))
+        init = np.log(np.expm1(np.log(2.0) / np.asarray(init_halflife, dtype=np.float64)))
+        self.raw = nn.Parameter(
+            torch.tensor(np.tile(init, (n_rel, 1)), dtype=torch.float32))
         d = n_rel * n_kernels
         self.head = nn.Sequential(nn.Linear(d, hidden), nn.ReLU(), nn.Linear(hidden, 1))
         self.ages = torch.arange(MAX_AGE, dtype=torch.float32)
@@ -150,3 +152,32 @@ def listwise_loss(score, y, gid, n_groups):
     logp = score - m[gid] - torch.log(denom[gid] + 1e-12)
     npos = torch.zeros(n_groups).index_add_(0, gid, y).clamp(min=1.0)
     return -(logp * y / npos[gid]).sum() / n_groups
+
+
+POOL_FOR = {"user": None, "item": None, "attr": "sum", "attr_item": "mean"}
+
+
+def to_decay_programs(relations, half_lives, norms=(None, "z_in_group")):
+    """Turns fitted decay rates into ordinary DSL programs.
+
+    After this the learned horizons are nothing special: they compile, cache and
+    pass the leak tests like any other feature, and can be measured at any scale.
+    """
+    out = []
+    for i, (_, anchor, via, event) in enumerate(relations):
+        for h in half_lives[i]:
+            for nrm in norms:
+                if anchor in ("user", "attr") and nrm == "z_in_group":
+                    # a user-keyed value is constant inside a candidate list
+                    if anchor == "user":
+                        continue
+                out.append({"kind": "decay", "anchor": anchor, "via": via,
+                            "event": event, "halflife": round(float(h), 3),
+                            "pool": POOL_FOR[anchor], "norm": nrm})
+    seen, uniq = set(), []
+    for q in out:
+        k = str(sorted(q.items(), key=lambda kv: kv[0]))
+        if k not in seen:
+            seen.add(k)
+            uniq.append(q)
+    return uniq

@@ -21,11 +21,12 @@ ap.add_argument("--epochs", type=int, default=120)
 ap.add_argument("--lr-lam", type=float, default=0.05)
 ap.add_argument("--lr-head", type=float, default=0.01)
 ap.add_argument("--seed", type=int, default=0)
+ap.add_argument("--users", type=int, default=0, help="override the scale, for smoke tests")
 a = ap.parse_args()
 
 torch.manual_seed(a.seed)
 torch.set_num_threads(8)
-users = D.sample_users(SCALES[a.scale])
+users = D.sample_users(a.users or SCALES[a.scale])
 b = Bundle(users, verbose=False)
 print(f"scale={a.scale}: {len(users)} users", flush=True)
 
@@ -115,8 +116,12 @@ for label, progs, with_kern in [("BASE", [], False), ("BASE+KERNEL", [], True),
     pu.write_parquet(RUNS / f"peruser_kern_{label.replace('+','_')}_{a.scale}.parquet")
     print(f"  {label:20} nf={len(m.feature_name()):3d} val={val['ndcg@10']:.4f} test={test['ndcg@10']:.4f}", flush=True)
 
+progs = kernels.to_decay_programs(kernels.RELATIONS, hl)
+(RUNS / "kernel_programs.json").write_text(json.dumps(progs, indent=1))
+print(f"\nwrote {len(progs)} decay programs to runs/kernel_programs.json")
+
 (RUNS / f"kernels_{a.scale}.json").write_text(json.dumps({
     "scale": a.scale, "n_users": int(len(users)), "relations": [r[0] for r in kernels.RELATIONS],
     "learned_half_lives": learned, "training": hist, "standalone": standalone,
-    "gbdt": results}, indent=1, ensure_ascii=False))
+    "n_decay_programs": len(progs), "gbdt": results}, indent=1, ensure_ascii=False))
 print("saved", RUNS / f"kernels_{a.scale}.json")

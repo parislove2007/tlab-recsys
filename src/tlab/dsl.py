@@ -60,6 +60,8 @@ def validate(p):
     k = p.get("kind")
     if k == "agg":
         _validate_agg(p)
+    elif k == "decay":
+        _validate_decay(p)
     elif k == "segment":
         _validate_segment(p)
     elif k == "nested":
@@ -74,6 +76,32 @@ def validate(p):
     else:
         raise InvalidProgram(f"unknown kind {k!r}")
     return p
+
+
+def _validate_decay(p):
+    """A soft window: every past event contributes exp(-ln2 * age / halflife).
+
+    This is how a horizon fitted by gradient descent comes back into the
+    language as an ordinary program, so it is cached, compiled and checked for
+    leaks exactly like any hand-written feature.
+    """
+    a, via, pool = p.get("anchor"), p.get("via"), p.get("pool")
+    if a not in ANCHORS:
+        raise InvalidProgram(f"anchor {a!r}")
+    if p.get("event") not in EVENTS:
+        raise InvalidProgram(f"event {p.get('event')!r}")
+    hl = p.get("halflife")
+    if not isinstance(hl, (int, float)) or not (0.05 <= float(hl) <= 2000):
+        raise InvalidProgram(f"halflife {hl!r}")
+    if p.get("norm") not in (None, "log1p", "z_in_group", "rank_in_group"):
+        raise InvalidProgram(f"norm {p.get('norm')!r}")
+    if a in ("attr", "attr_item"):
+        if via not in VIA:
+            raise InvalidProgram(f"anchor {a} needs a via")
+        if pool not in POOLS:
+            raise InvalidProgram(f"anchor {a} needs a pool")
+    elif via is not None or pool is not None:
+        raise InvalidProgram(f"anchor {a} takes no via/pool")
 
 
 def _validate_segment(p):
@@ -162,6 +190,16 @@ def _validate_agg(p):
 
 
 def name(p):
+    if p["kind"] == "decay":
+        bits = ["dec", p["anchor"]]
+        if p.get("via"):
+            bits.append(p["via"][:4])
+        bits += [p["event"][:3], f"h{p['halflife']:g}"]
+        if p.get("pool"):
+            bits.append(p["pool"][:3])
+        if p.get("norm"):
+            bits.append(p["norm"])
+        return "_".join(bits)
     if p["kind"] == "segment":
         return ("seg_" + p["dim"][:4] + "_" + p["event"][:3] + "_"
                 + ("all" if p.get("window") is None else f"w{p['window']}")
@@ -427,6 +465,56 @@ class FoldEngine:
                   .drop("den"))
         return g
 
+    def _decay_grouped(self, anchor, via, event, halflife):
+        key = ("decay", anchor, via, event, round(float(halflife), 4))
+        if key in self._grp:
+            return self._grp[key]
+        lam = math.log(2.0) / float(halflife)
+        df = (self._own_joined(event, via) if anchor == "attr"
+              else self.u[event] if anchor == "user"
+              else self._global(event) if anchor == "item"
+              else self._global(event).join(self._attr_map(via), on="item_id"))
+        keys = {"user": ["user_id"], "item": ["item_id"],
+                "attr": ["user_id", "value"], "attr_item": ["value"]}[anchor]
+        out = (df.group_by(keys)
+                 .agg((pl.col("age").cast(pl.Float64) * (-lam)).exp().sum().alias("v"))
+                 .with_columns(pl.col("v").cast(pl.Float32)))
+        if len(self._grp) >= self.grp_cache:
+            self._grp.pop(next(iter(self._grp)))
+        self._grp[key] = out
+        return out
+
+    def _eval_decay(self, p, cand):
+        self.calls += 1
+        a, via, pool = p["anchor"], p.get("via"), p.get("pool")
+        g = self._decay_grouped(a, via, p["event"], p["halflife"])
+        if a == "user":
+            s = cand.join(g, on="user_id", how="left")["v"]
+        elif a == "item":
+            s = cand.join(g, on="item_id", how="left")["v"]
+        else:
+            on = ["user_id", "value"] if a == "attr" else ["value"]
+            pooled = (cand.with_row_index("_rid")
+                      .join(self._attr_map(via), on="item_id")
+                      .join(g, on=on, how="left")
+                      .group_by("_rid")
+                      .agg(getattr(pl.col("v"), pool)().alias("v")))
+            s = (cand.with_row_index("_rid").join(pooled, on="_rid", how="left")
+                 .sort("_rid")["v"])
+        s = s.cast(pl.Float32)
+        nrm = p.get("norm")
+        if nrm == "log1p":
+            s = s.clip(lower_bound=0).log1p()
+        elif nrm in ("z_in_group", "rank_in_group"):
+            tmp = cand.select("user_id").with_columns(s.alias("v"))
+            if nrm == "z_in_group":
+                s = tmp.select(((pl.col("v") - pl.col("v").mean().over("user_id"))
+                                / (pl.col("v").std().over("user_id") + 1e-6)).alias("v"))["v"]
+            else:
+                s = tmp.select((pl.col("v").rank("average", descending=True).over("user_id")
+                                / pl.len().over("user_id")).alias("v"))["v"]
+        return s.cast(pl.Float32)
+
     def _seg_table(self, dim, event, window, agg):
         key = (dim, event, window, agg)
         if key in self._seg:
@@ -495,7 +583,9 @@ class FoldEngine:
         cand = cand.select(pl.col("user_id").cast(pl.Int32), pl.col("item_id").cast(pl.Int32))
         cols = {}
         for p in progs:
-            if p["kind"] == "segment":
+            if p["kind"] == "decay":
+                v = self._eval_decay(p, cand)
+            elif p["kind"] == "segment":
                 v = self._eval_segment(p, cand)
             elif p["kind"] == "nested":
                 v = self._eval_nested(p, cand)

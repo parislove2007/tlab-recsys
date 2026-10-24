@@ -6,6 +6,7 @@ Also measures what the searched features add on top of the hand-written ones,
 and whether a set discovered on a small user sample still helps on a large one.
 """
 import argparse
+import gc
 import glob
 import json
 import pathlib
@@ -30,16 +31,17 @@ ap.add_argument("--budget-match", type=int, default=0,
 ap.add_argument("--out", default=None)
 ap.add_argument("--only", default=None, help="comma separated label prefixes to keep")
 ap.add_argument("--skip", default=None, help="comma separated label prefixes to drop")
+ap.add_argument("--no-tune", action="store_true",
+                help="skip the validation grid and use the default ranker settings")
 ap.add_argument("--best-seed-only", action="store_true",
                 help="keep only the best validation seed of each search strategy")
 a = ap.parse_args()
 
 HUMAN = human_programs()
 GRID = grid_programs()
-sets = {"BASE": [], "BASE+HUMAN": HUMAN, "BASE+GRID": GRID}
+sets = {"BASE": [], "BASE+HUMAN": HUMAN}
 meta = {"BASE": {},
-        "BASE+HUMAN": {"n_programs": len(HUMAN), "source": "hand-written"},
-        "BASE+GRID": {"n_programs": len(GRID), "source": "systematic grid, no search"}}
+        "BASE+HUMAN": {"n_programs": len(HUMAN), "source": "hand-written"}}
 
 for f in sorted(glob.glob(str(RUNS / a.runs))):
     r = json.loads(pathlib.Path(f).read_text())
@@ -81,16 +83,67 @@ if a.skip:
     sets = {k: v for k, v in sets.items() if not any(k.startswith(x) for x in drop)}
 print("arms:", ", ".join(sets))
 
+# horizons fitted by gradient descent, re-expressed as ordinary DSL programs
+kp = RUNS / "kernel_programs.json"
+if kp.exists():
+    KERN = json.loads(kp.read_text())
+    sets["BASE+KERNEL"] = KERN
+    meta["BASE+KERNEL"] = {"n_programs": len(KERN), "source": "learned decay rates"}
+    sets["BASE+HUMAN+KERNEL"] = HUMAN + KERN
+    meta["BASE+HUMAN+KERNEL"] = {"n_programs": len(HUMAN) + len(KERN)}
+    if by_strategy:
+        pick = max(max(lst) for lst in by_strategy.values())[1]
+        sets["BASE+AUTO+KERNEL"] = sets[pick] + KERN
+        meta["BASE+AUTO+KERNEL"] = {"n_programs": len(sets[pick]) + len(KERN), "from": pick}
+    print(f"kernel programs: {len(KERN)}")
+
+# the grid is the widest arm by far, so it goes last: if it runs out of memory
+# every other arm is already measured and written
+sets["BASE+GRID"] = GRID
+meta["BASE+GRID"] = {"n_programs": len(GRID), "source": "systematic grid, no search"}
+
 users = D.sample_users(SCALES[a.scale])
 print(f"\nscale={a.scale}: {len(users)} users", flush=True)
 b = Bundle(users)
+
+# Ranker settings are selected on the validation fold using the reference arm
+# and then held fixed for every arm, so differences between arms come from the
+# features and not from a per-arm tuning budget.
+GRID = [
+    {},
+    {"num_leaves": 127, "min_data_in_leaf": 40},
+    {"num_leaves": 31, "min_data_in_leaf": 120, "learning_rate": 0.08},
+    {"num_leaves": 63, "learning_rate": 0.04, "lambda_l2": 8.0},
+    {"num_leaves": 63, "lambda_l2": 0.5, "feature_fraction": 0.6},
+]
+best_params, tuning = None, []
+if not a.no_tune:
+    cached = RUNS / f"ranker_params_{a.scale}.json"
+    if cached.exists():
+        saved = json.loads(cached.read_text())
+        best_params, tuning = saved["params"], saved["trials"]
+        print(f"ranker settings from {cached.name}: {best_params}", flush=True)
+    else:
+        ref_parts = b.matrix(HUMAN)
+        for cfg in GRID:
+            m, tt, _ = rank.train_rank(ref_parts, params=cfg or None)
+            v, _, _ = rank.evaluate(m, b, ref_parts, "val")
+            tuning.append({"params": cfg, "val_ndcg": v["ndcg@10"],
+                           "iters": m.best_iteration, "train_seconds": tt})
+            print(f"  tune {cfg} -> val {v['ndcg@10']:.4f}", flush=True)
+            del m
+        best = max(tuning, key=lambda x: x["val_ndcg"])
+        best_params = best["params"] or None
+        cached.write_text(json.dumps({"params": best_params, "trials": tuning},
+                                     indent=1, ensure_ascii=False))
+        print(f"chosen on validation: {best_params}", flush=True)
 
 results, per_user = {}, {}
 for label, progs in sets.items():
     t0 = time.time()
     parts = b.matrix(progs)
     tfeat = time.time() - t0
-    model, ttrain, _ = rank.train_rank(parts)
+    model, ttrain, _ = rank.train_rank(parts, params=best_params)
     val, _, _ = rank.evaluate(model, b, parts, "val")
     test, per_fold, pu = rank.evaluate(model, b, parts, "test")
     imp = rank.feature_importance(model)
@@ -109,6 +162,12 @@ for label, progs in sets.items():
     print(f"  {label:28} nf={len(model.feature_name()):3d} val={val['ndcg@10']:.4f} "
           f"test={test['ndcg@10']:.4f} abs={test['ndcg@10_abs']:.4f} auc={test['auc']:.4f} "
           f"feat={tfeat:.0f}s train={ttrain}s", flush=True)
+    del parts, model
+    gc.collect()
+    (RUNS / (a.out or f"final_{a.scale}.json")).write_text(json.dumps(
+        {"scale": a.scale, "n_users": int(len(users)), "reference": ref,
+         "ranker_params": best_params, "tuning_trials": tuning,
+         "results": results, "paired_vs_reference": {}}, indent=1, ensure_ascii=False))
 
 ref = "BASE+HUMAN"
 pairs = {}
@@ -123,5 +182,6 @@ for label in results:
 out = a.out or f"final_{a.scale}{'_bm' + str(a.budget_match) if a.budget_match else ''}.json"
 (RUNS / out).write_text(json.dumps(
     {"scale": a.scale, "n_users": int(len(users)), "reference": ref,
+     "ranker_params": best_params, "tuning_trials": tuning,
      "results": results, "paired_vs_reference": pairs}, indent=1, ensure_ascii=False))
 print("saved", RUNS / out)

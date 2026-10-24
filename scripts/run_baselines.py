@@ -46,11 +46,43 @@ for label, col, desc in [("rrf", "rrf", "rank fusion of the four generators"),
     }
     print(f"  heuristic {label:11} test ndcg@10 = {out['heuristics'][label]['ndcg@10']:.4f}", flush=True)
 
+# Ranker settings are chosen here, on the validation fold with the reference
+# feature set, and every later script reuses the cached choice so that no arm
+# gets a tuning budget the others did not.
+GRID = [
+    {},
+    {"num_leaves": 127, "min_data_in_leaf": 40},
+    {"num_leaves": 31, "min_data_in_leaf": 120, "learning_rate": 0.08},
+    {"num_leaves": 63, "learning_rate": 0.04, "lambda_l2": 8.0},
+    {"num_leaves": 63, "lambda_l2": 0.5, "feature_fraction": 0.6},
+]
+cached = RUNS / f"ranker_params_{a.scale}.json"
+if cached.exists():
+    saved = json.loads(cached.read_text())
+    best_params, trials = saved["params"], saved["trials"]
+else:
+    ref_parts = b.matrix(human_programs())
+    trials = []
+    for cfg in GRID:
+        m, tt, _ = rank.train_rank(ref_parts, params=cfg or None)
+        v, _, _ = rank.evaluate(m, b, ref_parts, "val")
+        trials.append({"params": cfg, "val_ndcg": v["ndcg@10"],
+                       "iters": m.best_iteration, "train_seconds": tt})
+        print(f"  tune {cfg} -> val {v['ndcg@10']:.4f}", flush=True)
+        del m
+    best_params = max(trials, key=lambda x: x["val_ndcg"])["params"] or None
+    cached.write_text(json.dumps({"params": best_params, "trials": trials},
+                                 indent=1, ensure_ascii=False))
+    del ref_parts
+print("ranker settings chosen on validation:", best_params, flush=True)
+out["ranker_params"] = best_params
+out["tuning_trials"] = trials
+
 for label, progs in [("BASE", []), ("BASE+HUMAN", human_programs())]:
     t0 = time.time()
     parts = b.matrix(progs)
     tfeat = time.time() - t0
-    model, ttrain, cats = rank.train_rank(parts)
+    model, ttrain, cats = rank.train_rank(parts, params=best_params)
     val, _, _ = rank.evaluate(model, b, parts, "val")
     test, per_fold, per_user = rank.evaluate(model, b, parts, "test")
     imp = rank.feature_importance(model)

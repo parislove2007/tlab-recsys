@@ -20,7 +20,8 @@ import polars as pl
 from tlab import dataset as D, space, rank
 from tlab.config import DATA, TEST_DATES, TRAIN_DATES
 from tlab.dsl import FoldEngine, name
-from tlab.human import human_programs
+from tlab import kernels
+from tlab.human import human_programs, grid_programs, nested_programs, segment_programs
 
 T = TEST_DATES[0]
 N_USERS = 1500
@@ -48,20 +49,36 @@ def _poison(ev, users):
     return pl.concat([ev, loud, loud, far]).sort("ts")
 
 
+def _all_families():
+    """Every shape the language can produce, including the two extensions and
+    the soft windows fitted by gradient descent."""
+    rng = random.Random(11)
+    hl = np.tile(np.array([3.0, 90.0]), (len(kernels.RELATIONS), 1))
+    return (human_programs()
+            + grid_programs(limit=120, seed=3)
+            + nested_programs()
+            + segment_programs()
+            + kernels.to_decay_programs(kernels.RELATIONS, hl)
+            + [space.random_program(rng) for _ in range(150)])
+
+
 def test_features_invariant_to_future_events():
     ev, users, cand = _sample()
     attrs = D.load_attrs()
-    rng = random.Random(11)
-    progs = human_programs() + [space.random_program(rng) for _ in range(150)]
+    usr = pl.read_parquet(DATA / "users.parquet")
+    progs = _all_families()
 
-    clean = FoldEngine(D.history(ev, T), T, attrs, users=users).compute(progs, cand)
-    dirty = FoldEngine(D.history(_poison(ev, users), T), T, attrs, users=users).compute(progs, cand)
+    clean = FoldEngine(D.history(ev, T), T, attrs, users=users,
+                       user_attrs=usr).compute(progs, cand)
+    dirty = FoldEngine(D.history(_poison(ev, users), T), T, attrs, users=users,
+                       user_attrs=usr).compute(progs, cand)
 
     assert clean.columns == dirty.columns
     for c in clean.columns:
         x, y = clean[c].to_numpy(), dirty[c].to_numpy()
         assert np.array_equal(np.isnan(x), np.isnan(y)), f"{c}: null pattern changed"
         assert np.array_equal(x[~np.isnan(x)], y[~np.isnan(y)]), f"{c}: values changed"
+    print(f"      ({clean.width} features across every family of the language)")
 
 
 def test_engine_refuses_future_events():
