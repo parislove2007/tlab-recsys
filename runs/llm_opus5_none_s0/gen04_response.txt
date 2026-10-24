@@ -1,0 +1,619 @@
+[
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": null,
+"agg": "recency",
+"norm": null,
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "how long since the user came back, interacted with relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": null,
+"agg": "mean_pct",
+"norm": null,
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "how deeply the user watches in general, interacted with relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "nuniq_day",
+"norm": "per_day",
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "visit regularity, interacted with relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "sum_dur",
+"norm": "log1p",
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "recent watch time, interacted with relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "log1p",
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "very recent activity, interacted with relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": "log1p",
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "monthly activity, interacted with relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "trend",
+"norm": null,
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "is the user ramping up or cooling off, interacted with relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": null,
+"agg": "mean_dur",
+"norm": null,
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "typical session length, interacted with relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum"
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "keywords affinity times relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "countries",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "max"
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "countries affinity times relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "decade",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "max"
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "decade affinity times relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "content_type",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "max"
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "content_type affinity times relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "directors",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "max"
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "directors affinity times relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "studios",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "max"
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "studios affinity times relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum"
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "sum_dur",
+"norm": "z_in_group",
+"pool": null
+},
+"why": "taste times relative watch time"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum"
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "trend",
+"norm": null,
+"pool": null
+},
+"why": "taste times momentum"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum"
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null
+},
+"why": "taste times relative popularity rank"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": null,
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": null,
+"pool": null
+},
+"smooth": 1.0,
+"why": "item heat normalised by how active the user is"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "nuniq_user",
+"norm": null,
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "nuniq_item",
+"norm": null,
+"pool": null
+},
+"smooth": 1.0,
+"why": "item reach against the breadth of the user's taste"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "sum_dur",
+"norm": null,
+"pool": null
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": null,
+"pool": null
+},
+"smooth": 1.0,
+"why": "mean watch time at the found horizon"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum",
+"why": "genre affinity horizon sweep at 3 days"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum",
+"why": "genre affinity horizon sweep at 7 days"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 60,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum",
+"why": "genre affinity horizon sweep at 60 days"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 180,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum",
+"why": "genre affinity horizon sweep at 180 days"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum",
+"why": "theme affinity horizon sweep at 7 days"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": 90,
+"agg": "count",
+"norm": "share_user",
+"pool": "sum",
+"why": "theme affinity horizon sweep at 90 days"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "directors",
+"event": "start",
+"window": null,
+"agg": "recency",
+"norm": null,
+"pool": "min",
+"why": "days since the user saw this director"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "recency",
+"norm": null,
+"pool": "min",
+"why": "days since the user saw this theme"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "nuniq_day",
+"norm": "z_in_group",
+"pool": null,
+"why": "how many days of the week the item had demand, relative"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "sum_dur",
+"norm": "per_day",
+"pool": null,
+"why": "watch time per day at a week"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "actors",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "sum"
+},
+"b": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "sum"
+},
+"why": "do cast and genre signals agree for this candidate"
+}
+]

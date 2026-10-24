@@ -1,0 +1,266 @@
+[
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "window": 3,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "window": 7,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "window": 30,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "watch",
+  "window": 3,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "watch",
+  "window": 7,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "watch",
+  "window": 30,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "finish",
+  "window": 3,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "finish",
+  "window": 7,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "finish",
+  "window": 30,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "window": 30,
+  "agg": "nuniq_item",
+  "norm": null,
+  "pool": "sum"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "window": 30,
+  "agg": "nuniq_day",
+  "norm": null,
+  "pool": "sum"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "window": 30,
+  "agg": "mean_age",
+  "norm": null,
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "window": 30,
+  "agg": "std_pct",
+  "norm": null,
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "window": 30,
+  "agg": "nuniq_item",
+  "norm": null,
+  "pool": "sum"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "window": 30,
+  "agg": "nuniq_day",
+  "norm": null,
+  "pool": "sum"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "window": 30,
+  "agg": "mean_age",
+  "norm": null,
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "window": 30,
+  "agg": "std_pct",
+  "norm": null,
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "window": 14,
+  "agg": "count",
+  "norm": "per_day",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "window": 90,
+  "agg": "count",
+  "norm": "per_day",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "window": 3,
+  "agg": "nuniq_day",
+  "norm": null,
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "watch",
+  "window": 7,
+  "agg": "nuniq_day",
+  "norm": null,
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "user",
+  "via": null,
+  "event": "start",
+  "window": 7,
+  "agg": "nuniq_item",
+  "norm": "log1p",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "user",
+  "via": null,
+  "event": "start",
+  "window": 7,
+  "agg": "sum_dur",
+  "norm": "log1p",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "user",
+  "via": null,
+  "event": "start",
+  "window": null,
+  "agg": "mean_age",
+  "norm": null,
+  "pool": null
+ },
+ {
+  "kind": "ratio",
+  "a": {
+   "kind": "agg",
+   "anchor": "user",
+   "via": null,
+   "event": "start",
+   "window": 7,
+   "agg": "count",
+   "norm": null,
+   "pool": null
+  },
+  "b": {
+   "kind": "agg",
+   "anchor": "user",
+   "via": null,
+   "event": "start",
+   "window": 30,
+   "agg": "count",
+   "norm": null,
+   "pool": null
+  },
+  "smooth": 1.0
+ }
+]

@@ -1,0 +1,344 @@
+[
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "window": null,
+  "agg": "sum_dur",
+  "norm": "share_user",
+  "pool": "sum"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "window": null,
+  "agg": "sum_dur",
+  "norm": "share_user",
+  "pool": "sum"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "actors",
+  "event": "start",
+  "window": null,
+  "agg": "sum_dur",
+  "norm": "share_user",
+  "pool": "sum"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "directors",
+  "event": "start",
+  "window": null,
+  "agg": "sum_dur",
+  "norm": "share_user",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "window": null,
+  "agg": "mean_dur",
+  "norm": null,
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "window": null,
+  "agg": "max_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "window": null,
+  "agg": "max_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "window": 30,
+  "agg": "sum_dur",
+  "norm": "share_user",
+  "pool": "sum"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "window": 7,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "decade",
+  "event": "start",
+  "window": 7,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "countries",
+  "event": "start",
+  "window": 7,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "studios",
+  "event": "start",
+  "window": 7,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "age_rating",
+  "event": "start",
+  "window": 7,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "window": null,
+  "agg": "mean_pct",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "window": 7,
+  "agg": "trend",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "window": 7,
+  "agg": "nuniq_day",
+  "norm": null,
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "watch",
+  "window": 7,
+  "agg": "count",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "decade",
+  "event": "start",
+  "window": 30,
+  "agg": "nuniq_user",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "window": 3,
+  "agg": "sum_dur",
+  "norm": "per_day",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "window": 7,
+  "agg": "sum_dur",
+  "norm": "per_day",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "watch",
+  "window": 7,
+  "agg": "sum_dur",
+  "norm": "z_in_group",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "finish",
+  "window": 3,
+  "agg": "count",
+  "norm": "rank_in_group",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "finish",
+  "window": 7,
+  "agg": "nuniq_user",
+  "norm": "z_in_group",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "watch",
+  "window": 7,
+  "agg": "mean_pct",
+  "norm": null,
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "window": 60,
+  "agg": "count",
+  "norm": "rank_in_group",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "window": 90,
+  "agg": "count",
+  "norm": "rank_in_group",
+  "pool": null
+ },
+ {
+  "kind": "agg",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "window": 180,
+  "agg": "count",
+  "norm": "rank_in_group",
+  "pool": null
+ },
+ {
+  "kind": "ratio",
+  "a": {
+   "kind": "agg",
+   "anchor": "item",
+   "via": null,
+   "event": "finish",
+   "window": 7,
+   "agg": "count",
+   "norm": null,
+   "pool": null
+  },
+  "b": {
+   "kind": "agg",
+   "anchor": "item",
+   "via": null,
+   "event": "watch",
+   "window": 7,
+   "agg": "count",
+   "norm": null,
+   "pool": null
+  },
+  "smooth": 1.0
+ },
+ {
+  "kind": "ratio",
+  "a": {
+   "kind": "agg",
+   "anchor": "item",
+   "via": null,
+   "event": "start",
+   "window": 3,
+   "agg": "sum_dur",
+   "norm": null,
+   "pool": null
+  },
+  "b": {
+   "kind": "agg",
+   "anchor": "item",
+   "via": null,
+   "event": "start",
+   "window": 30,
+   "agg": "sum_dur",
+   "norm": null,
+   "pool": null
+  },
+  "smooth": 1.0
+ },
+ {
+  "kind": "ratio",
+  "a": {
+   "kind": "agg",
+   "anchor": "attr",
+   "via": "genres",
+   "event": "start",
+   "window": 30,
+   "agg": "sum_dur",
+   "norm": null,
+   "pool": "sum"
+  },
+  "b": {
+   "kind": "agg",
+   "anchor": "attr",
+   "via": "genres",
+   "event": "start",
+   "window": null,
+   "agg": "sum_dur",
+   "norm": null,
+   "pool": "sum"
+  },
+  "smooth": 1.0
+ }
+]

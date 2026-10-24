@@ -1,0 +1,293 @@
+[
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": "hottest genre of the candidate, start at 3d"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": "hottest genre of the candidate, start at 7d"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": "hottest genre of the candidate, start at 30d"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "watch",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": "hottest genre of the candidate, watch at 3d"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "watch",
+"window": 7,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": "hottest genre of the candidate, watch at 7d"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "watch",
+"window": 30,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": "hottest genre of the candidate, watch at 30d"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "finish",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": "hottest genre of the candidate, finish at 3d"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "finish",
+"window": 7,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": "hottest genre of the candidate, finish at 7d"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "finish",
+"window": 30,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": "hottest genre of the candidate, finish at 30d"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 30,
+"agg": "nuniq_item",
+"norm": null,
+"pool": "sum",
+"why": "nuniq_item of the user inside the genres, monthly"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 30,
+"agg": "nuniq_day",
+"norm": null,
+"pool": "sum",
+"why": "nuniq_day of the user inside the genres, monthly"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 30,
+"agg": "mean_age",
+"norm": null,
+"pool": "mean",
+"why": "mean_age of the user inside the genres, monthly"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 30,
+"agg": "std_pct",
+"norm": null,
+"pool": "mean",
+"why": "std_pct of the user inside the genres, monthly"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": 30,
+"agg": "nuniq_item",
+"norm": null,
+"pool": "sum",
+"why": "nuniq_item of the user inside the keywords, monthly"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": 30,
+"agg": "nuniq_day",
+"norm": null,
+"pool": "sum",
+"why": "nuniq_day of the user inside the keywords, monthly"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": 30,
+"agg": "mean_age",
+"norm": null,
+"pool": "mean",
+"why": "mean_age of the user inside the keywords, monthly"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": 30,
+"agg": "std_pct",
+"norm": null,
+"pool": "mean",
+"why": "std_pct of the user inside the keywords, monthly"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 14,
+"agg": "count",
+"norm": "per_day",
+"pool": null,
+"why": "two-week rate"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 90,
+"agg": "count",
+"norm": "per_day",
+"pool": null,
+"why": "quarterly rate"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "nuniq_day",
+"norm": null,
+"pool": null,
+"why": "days of demand in three"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "watch",
+"window": 7,
+"agg": "nuniq_day",
+"norm": null,
+"pool": null,
+"why": "days of deep watches in a week"
+},
+{
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "nuniq_item",
+"norm": "log1p",
+"pool": null,
+"why": "breadth this week"
+},
+{
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "sum_dur",
+"norm": "log1p",
+"pool": null,
+"why": "time spent this week"
+},
+{
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": null,
+"agg": "mean_age",
+"norm": null,
+"pool": null,
+"why": "how spread out the user's history is"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"smooth": 1.0,
+"why": "user activity velocity"
+}
+]

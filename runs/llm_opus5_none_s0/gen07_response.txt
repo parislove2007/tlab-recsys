@@ -1,0 +1,380 @@
+[
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "sum_dur",
+"norm": "share_user",
+"pool": "sum",
+"why": "share of watch time in this genres"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "sum_dur",
+"norm": "share_user",
+"pool": "sum",
+"why": "share of watch time in this keywords"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "actors",
+"event": "start",
+"window": null,
+"agg": "sum_dur",
+"norm": "share_user",
+"pool": "sum",
+"why": "share of watch time in this actors"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "directors",
+"event": "start",
+"window": null,
+"agg": "sum_dur",
+"norm": "share_user",
+"pool": "max",
+"why": "share of watch time in this directors"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "mean_dur",
+"norm": null,
+"pool": "mean",
+"why": "typical session length in the genre"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "max_pct",
+"norm": null,
+"pool": "max",
+"why": "did the user ever finish something in this genre"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "max_pct",
+"norm": null,
+"pool": "max",
+"why": "same for the theme"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 30,
+"agg": "sum_dur",
+"norm": "share_user",
+"pool": "sum",
+"why": "recent time share by genre"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "relative heat of the genres"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "decade",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "relative heat of the decade"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "countries",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "relative heat of the countries"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "studios",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "relative heat of the studios"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "age_rating",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "relative heat of the age_rating"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "mean_pct",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "relative watchability of the genre"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": 7,
+"agg": "trend",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "relative genre momentum"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": 7,
+"agg": "nuniq_day",
+"norm": null,
+"pool": "mean",
+"why": "how many days the genre had demand"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "watch",
+"window": 7,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "relative deep-watch heat of the genre"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "decade",
+"event": "start",
+"window": 30,
+"agg": "nuniq_user",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "reach of the era"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "sum_dur",
+"norm": "per_day",
+"pool": null,
+"why": "watch time per day, very recent"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "sum_dur",
+"norm": "per_day",
+"pool": null,
+"why": "watch time per day, weekly"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "watch",
+"window": 7,
+"agg": "sum_dur",
+"norm": "z_in_group",
+"pool": null,
+"why": "relative deep-watch time"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "finish",
+"window": 3,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null,
+"why": "relative completions, very recent"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "finish",
+"window": 7,
+"agg": "nuniq_user",
+"norm": "z_in_group",
+"pool": null,
+"why": "how many distinct people finished it"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "watch",
+"window": 7,
+"agg": "mean_pct",
+"norm": null,
+"pool": null,
+"why": "depth among those who got past 30%"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 60,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null,
+"why": "long end of the sweep, 60 days"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 90,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null,
+"why": "long end of the sweep, 90 days"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 180,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null,
+"why": "long end of the sweep, 180 days"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "finish",
+"window": 7,
+"agg": "count",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "watch",
+"window": 7,
+"agg": "count",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"smooth": 1.0,
+"why": "of those who watched deeply, how many finished"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "sum_dur",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "sum_dur",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"smooth": 1.0,
+"why": "velocity measured in watch time rather than events"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 30,
+"agg": "sum_dur",
+"norm": null,
+"pool": "sum",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "sum_dur",
+"norm": null,
+"pool": "sum",
+"why": ""
+},
+"smooth": 1.0,
+"why": "is time spent in this genre concentrated in the last month"
+}
+]

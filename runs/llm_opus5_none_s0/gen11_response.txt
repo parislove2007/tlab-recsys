@@ -1,0 +1,358 @@
+[
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "directors",
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "directors-level demand"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "directors",
+"event": "start",
+"window": 7,
+"agg": "nuniq_user",
+"norm": null,
+"pool": "mean",
+"why": "directors-level reach"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "actors",
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "actors-level demand"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "actors",
+"event": "start",
+"window": 7,
+"agg": "nuniq_user",
+"norm": null,
+"pool": "mean",
+"why": "actors-level reach"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "studios",
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "studios-level demand"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "studios",
+"event": "start",
+"window": 7,
+"agg": "nuniq_user",
+"norm": null,
+"pool": "mean",
+"why": "studios-level reach"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "age_rating",
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "age_rating-level demand"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "age_rating",
+"event": "start",
+"window": 7,
+"agg": "nuniq_user",
+"norm": null,
+"pool": "mean",
+"why": "age_rating-level reach"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "countries",
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "mean",
+"why": "countries-level demand"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "countries",
+"event": "start",
+"window": 7,
+"agg": "nuniq_user",
+"norm": null,
+"pool": "mean",
+"why": "countries-level reach"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "nuniq_day",
+"norm": null,
+"pool": "sum",
+"why": "days of contact with the genres"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "nuniq_day",
+"norm": null,
+"pool": "sum",
+"why": "days of contact with the keywords"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "directors",
+"event": "start",
+"window": null,
+"agg": "nuniq_day",
+"norm": null,
+"pool": "max",
+"why": "days of contact with the directors"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "countries",
+"event": "start",
+"window": null,
+"agg": "nuniq_day",
+"norm": null,
+"pool": "max",
+"why": "days of contact with the countries"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 14,
+"agg": "std_pct",
+"norm": null,
+"pool": null,
+"why": "divisiveness over two weeks"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "max_pct",
+"norm": null,
+"pool": null,
+"why": "did anyone finish it this month"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "watch",
+"window": null,
+"agg": "std_pct",
+"norm": null,
+"pool": null,
+"why": "divisiveness among deep watchers"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "mean_dur",
+"norm": "z_in_group",
+"pool": null,
+"why": "relative session length this week"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "finish",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"smooth": 1.0,
+"why": "lifetime completion rate"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "finish",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": "sum",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": "sum",
+"why": ""
+},
+"smooth": 1.0,
+"why": "completion rate of the user inside this genre"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "watch",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": "sum",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": "sum",
+"why": ""
+},
+"smooth": 1.0,
+"why": "deep-watch rate of the user inside this theme"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "decade",
+"event": "start",
+"window": null,
+"agg": "mean_age",
+"norm": null,
+"pool": "mean",
+"why": "age of demand for the era"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": 90,
+"agg": "trend",
+"norm": null,
+"pool": "mean",
+"why": "slow genre drift"
+},
+{
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "watch",
+"window": 3,
+"agg": "count",
+"norm": "log1p",
+"pool": null,
+"why": "deep watches in the last three days"
+},
+{
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "finish",
+"window": 7,
+"agg": "count",
+"norm": "log1p",
+"pool": null,
+"why": "completions this week"
+},
+{
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": null,
+"agg": "std_pct",
+"norm": null,
+"pool": null,
+"why": "how variable the user's depth is"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 14,
+"agg": "trend",
+"norm": null,
+"pool": "sum",
+"why": "very recent genre drift"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": 14,
+"agg": "trend",
+"norm": null,
+"pool": "sum",
+"why": "very recent theme drift"
+}
+]

@@ -1,0 +1,480 @@
+[
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": "min",
+"why": "weakest genres link to the candidate"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": "min",
+"why": "weakest keywords link to the candidate"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "actors",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": "min",
+"why": "weakest actors link to the candidate"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "directors",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": null,
+"pool": "min",
+"why": "weakest directors link to the candidate"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "mean",
+"why": "average genres affinity"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "share_user",
+"pool": "mean",
+"why": "average keywords affinity"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 30,
+"agg": "count",
+"norm": null,
+"pool": "min",
+"why": "weakest recent genre link"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "mean_pct",
+"norm": null,
+"pool": "min",
+"why": "least-watched theme of the item"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": "sum",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null,
+"why": ""
+},
+"smooth": 1.0,
+"why": "taste rank against popularity rank"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "actors",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": "sum",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null,
+"why": ""
+},
+"smooth": 1.0,
+"why": "cast rank against popularity rank"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": "sum",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null,
+"why": ""
+},
+"smooth": 1.0,
+"why": "theme rank against popularity rank"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "sum",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null,
+"why": ""
+},
+"why": "agreement of relative taste and relative heat"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": "mean",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null,
+"why": ""
+},
+"smooth": 1.0,
+"why": "is the item hotter than its genre"
+},
+{
+"kind": "ratio",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": "sum",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": "mean",
+"why": ""
+},
+"smooth": 1.0,
+"why": "personal rank against crowd rank, both relative"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "sum",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "attr",
+"via": "keywords",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "sum",
+"why": ""
+},
+"why": "do genre and theme signals agree"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "attr",
+"via": "directors",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "max",
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "attr",
+"via": "actors",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "z_in_group",
+"pool": "sum",
+"why": ""
+},
+"why": "do director and cast signals agree"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "genres",
+"event": "watch",
+"window": 30,
+"agg": "count",
+"norm": "share_item",
+"pool": "mean",
+"why": "genre share of the item's own demand"
+},
+{
+"kind": "agg",
+"anchor": "attr_item",
+"via": "decade",
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "share_item",
+"pool": "mean",
+"why": "era share of the item's demand"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "watch",
+"window": 30,
+"agg": "count",
+"norm": "share_item",
+"pool": null,
+"why": "deep-watch share of the item's events"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "finish",
+"window": null,
+"agg": "count",
+"norm": "share_item",
+"pool": null,
+"why": "lifetime completion share"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "log1p",
+"pool": null,
+"why": "log form of the dominant shape"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "count",
+"norm": "log1p",
+"pool": null,
+"why": "log form at a week"
+},
+{
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "nuniq_user",
+"norm": "log1p",
+"pool": null,
+"why": "log reach"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": null,
+"agg": "count",
+"norm": "log1p",
+"pool": "sum",
+"why": "log genre affinity"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": null,
+"agg": "nuniq_item",
+"norm": "log1p",
+"pool": null,
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "z_in_group",
+"pool": null,
+"why": ""
+},
+"why": "breadth of the user's taste against relative heat"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": null,
+"agg": "recency",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 3,
+"agg": "count",
+"norm": "rank_in_group",
+"pool": null,
+"why": ""
+},
+"why": "lapsed users may follow popularity more"
+},
+{
+"kind": "mul",
+"a": {
+"kind": "agg",
+"anchor": "user",
+"via": null,
+"event": "start",
+"window": 30,
+"agg": "mean_pct",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"b": {
+"kind": "agg",
+"anchor": "item",
+"via": null,
+"event": "start",
+"window": 7,
+"agg": "mean_pct",
+"norm": null,
+"pool": null,
+"why": ""
+},
+"why": "recent user depth against recent item depth"
+},
+{
+"kind": "agg",
+"anchor": "attr",
+"via": "genres",
+"event": "start",
+"window": 14,
+"agg": "count",
+"norm": null,
+"pool": "min",
+"why": "weakest very recent genre link"
+}
+]

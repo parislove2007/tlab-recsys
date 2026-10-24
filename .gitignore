@@ -1,0 +1,7 @@
+.venv/
+data/
+data_raw/
+__pycache__/
+*.pyc
+logs/
+runs/peruser_*.parquet

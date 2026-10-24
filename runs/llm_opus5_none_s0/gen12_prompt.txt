@@ -1,0 +1,90 @@
+A feature is a JSON object in this grammar.
+
+agg program:
+{"kind":"agg","anchor":A,"via":V,"event":E,"window":W,"agg":G,"norm":N,"pool":P}
+  anchor A  ['user', 'item', 'attr', 'attr_item']
+      user       - aggregate the user's own past events            -> one value per user
+      item       - aggregate the candidate item's past events      -> one value per item
+      attr       - the user's past events on items that share an attribute value
+                   with the candidate item (the indirect user-item link)
+      attr_item  - everyone's past events on items sharing the attribute value
+                   (how hot that genre / decade / director is right now)
+  via V     ['genres', 'countries', 'studios', 'directors', 'actors', 'keywords', 'content_type', 'decade', 'age_rating']            (required for attr and attr_item, else null)
+  event E   ['start', 'watch', 'finish']  (nested funnel: start = opened, watch = >=30% seen,
+                               finish = >=90% seen)
+  window W  [1, 3, 7, 14, 30, 60, 90, 180, None]   (days back from the prediction date; null = all history)
+  agg G     ['count', 'nuniq_item', 'nuniq_user', 'nuniq_day', 'mean_pct', 'max_pct', 'std_pct', 'sum_dur', 'mean_dur', 'recency', 'mean_age', 'trend']
+      recency  = days since the most recent matching event
+      mean_age = mean age in days of matching events
+      trend    = count in the recent half of the window / count in the older half
+  norm N    [None, 'log1p', 'per_day', 'share_user', 'share_item', 'z_in_group', 'rank_in_group']
+      per_day        divide by the window length
+      share_user     divide by the user's total event count in the same window
+      share_item     divide by the item's total event count in the same window
+      z_in_group     standardise within the candidate list of one user
+      rank_in_group  relative rank within the candidate list of one user
+  pool P    ['max', 'sum', 'mean', 'min']    (required for attr and attr_item: an item has several
+                               attribute values, this pools over them)
+
+compound programs:
+{"kind":"ratio","a":<agg>,"b":<agg>,"smooth":1.0}   a / (b + 1)
+{"kind":"mul","a":<agg>,"b":<agg>}                  a * b
+
+Rules the validator enforces: nuniq_user is rejected for anchor user/attr,
+nuniq_item for anchor item; per_day, share_user and share_item only apply to
+counting aggregates (count, nuniq_item, nuniq_user, nuniq_day, sum_dur);
+share_user needs anchor user or attr, share_item needs item or attr_item.
+
+Domain: KION, a Russian film and series streaming service. One row
+per (user, item) in the log, so a user never watches the same item twice and
+already-watched items are removed from the candidate list. Direct user-item
+history is therefore useless here and all personalisation has to come through
+indirect links. Task: for a prediction date T, rank ~100 candidate items for
+each user by whether they will be watched in the following seven days.
+Candidates come from popularity, ALS, item-item co-visitation and
+genre-popularity generators; their ranks and scores are already in the model,
+as are user demographics and item metadata.
+
+Already in the model (accepted): item_sta_w3_count_z_in_group, item_sta_w3_nuniq_user_per_day, item_sta_w7_count_rank_in_group, item_sta_w7_trend, attr_acto_sta_all_count_sum_share_user, item_sta_all_mean_age, ratio__item_fin_w30_count__item_sta_w30_count, attr_coun_sta_all_count_max_share_user, item_sta_w30_trend, mul__attr_genr_sta_all_count_sum_share_user__item_sta_w7_count_log1p, item_sta_w7_count_z_in_group, item_sta_w3_count_rank_in_group, item_sta_w3_trend, ratio__item_sta_w3_count__item_sta_w30_count, attr_cont_sta_all_count_max_share_user, attr_acto_sta_all_count_sum_z_in_group, item_sta_w7_sum_dur_z_in_group, item_wat_w7_count_z_in_group, attr_genr_sta_all_count_sum_z_in_group, attr_genr_sta_all_count_sum_rank_in_group, mul__user_sta_all_count_log1p__item_sta_w3_count_z_in_group, item_sta_w3_sum_dur_z_in_group, ratio__item_sta_w3_count__item_sta_w7_count, item_sta_w3_sum_dur_rank_in_group, ratio__attr_genr_sta_w30_count_sum__attr_item_genr_sta_w30_count_mea, item_fin_w3_count_z_in_group, attr_coun_sta_all_count_max_z_in_group, attr_acto_sta_w30_count_sum_z_in_group, attr_deca_sta_all_count_max_z_in_group, attr_genr_wat_all_count_sum_z_in_group, attr_genr_sta_all_nuniq_item_sum, attr_item_genr_sta_all_mean_pct_mea, attr_keyw_sta_all_nuniq_item_sum, attr_keyw_sta_all_mean_age_mea, item_sta_w30_std_pct_z_in_group, attr_keyw_wat_all_count_sum_z_in_group, attr_genr_fin_w30_count_sum_z_in_group, attr_acto_sta_all_mean_age_mea, attr_cont_sta_all_recency_min, attr_acto_sta_all_recency_min, ratio__item_sta_w3_count__item_sta_all_count, item_sta_w7_nuniq_user_rank_in_group, attr_acto_sta_all_count_sum_rank_in_group, ratio__item_sta_w7_count__item_sta_w30_count, ratio__item_sta_w7_count__item_sta_all_count, item_sta_w7_max_pct_z_in_group, item_sta_all_mean_age_rank_in_group, ratio__item_sta_w30_count__item_sta_all_count, item_fin_w7_count_rank_in_group, ratio__item_sta_w7_nuniq_user__item_sta_all_nuniq_user
+
+Highest screening gain so far (gain = LightGBM split gain):
+     38133.6  {"agg":"count","anchor":"item","event":"start","kind":"agg","norm":"z_in_group","pool":null,"via":null,"window":3}
+     21221.5  {"agg":"nuniq_user","anchor":"item","event":"start","kind":"agg","norm":"per_day","pool":null,"via":null,"window":3}
+     21124.8  {"agg":"count","anchor":"item","event":"start","kind":"agg","norm":"z_in_group","pool":null,"via":null,"window":7}
+     20799.0  {"agg":"count","anchor":"item","event":"start","kind":"agg","norm":"rank_in_group","pool":null,"via":null,"window":3}
+     15162.1  {"a":{"agg":"count","anchor":"user","event":"start","kind":"agg","norm":"log1p","pool":null,"via":null,"window":null},"b":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":"z_in_group","pool":null,"via":null,"window":3},"kind":"mul"}
+     15108.6  {"a":{"agg":"count","anchor":"attr","event":"start","kind":"agg","norm":"share_user","pool":"max","via":"countries","window":null},"b":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":"z_in_group","pool":null,"via":null,"window":3},"kind":"mul"}
+     14362.0  {"agg":"count","anchor":"item","event":"start","kind":"agg","norm":"rank_in_group","pool":null,"via":null,"window":7}
+      7325.6  {"agg":"trend","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":3}
+      7075.9  {"agg":"trend","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":7}
+      6956.1  {"agg":"trend","anchor":"item","event":"watch","kind":"agg","norm":null,"pool":null,"via":null,"window":7}
+      6643.7  {"a":{"agg":"nuniq_item","anchor":"user","event":"start","kind":"agg","norm":"log1p","pool":null,"via":null,"window":null},"b":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":"z_in_group","pool":null,"via":null,"window":3},"kind":"mul"}
+      4591.1  {"agg":"sum_dur","anchor":"item","event":"start","kind":"agg","norm":"z_in_group","pool":null,"via":null,"window":3}
+      4352.4  {"a":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":3},"b":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":7},"kind":"ratio","smooth":1.0}
+      4213.9  {"agg":"count","anchor":"attr","event":"start","kind":"agg","norm":"share_user","pool":"sum","via":"actors","window":null}
+      3917.7  {"a":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":3},"b":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":30},"kind":"ratio","smooth":1.0}
+      3592.9  {"a":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":3},"b":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":null},"kind":"ratio","smooth":1.0}
+      3123.7  {"agg":"mean_age","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":null}
+      2680.7  {"a":{"agg":"count","anchor":"item","event":"finish","kind":"agg","norm":null,"pool":null,"via":null,"window":30},"b":{"agg":"count","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":30},"kind":"ratio","smooth":1.0}
+
+Scored exactly zero gain (do not propose these shapes again):
+  {"agg":"count","anchor":"item","event":"start","kind":"agg","norm":"z_in_group","pool":null,"via":null,"window":1}
+  {"agg":"nuniq_user","anchor":"item","event":"start","kind":"agg","norm":"per_day","pool":null,"via":null,"window":1}
+  {"agg":"count","anchor":"item","event":"start","kind":"agg","norm":"rank_in_group","pool":null,"via":null,"window":1}
+  {"agg":"recency","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":7}
+  {"agg":"recency","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":3}
+  {"agg":"nuniq_day","anchor":"attr_item","event":"start","kind":"agg","norm":null,"pool":"mean","via":"genres","window":7}
+  {"a":{"agg":"nuniq_day","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":7},"b":{"agg":"nuniq_day","anchor":"item","event":"start","kind":"agg","norm":null,"pool":null,"via":null,"window":30},"kind":"ratio","smooth":1.0}
+  {"agg":"count","anchor":"attr","event":"start","kind":"agg","norm":"z_in_group","pool":"max","via":"directors","window":60}
+
+Validation NDCG@10 is 0.2979 with 50 searched features after 328 proposals.
+6 block(s) were rejected for not improving validation.
+
+Propose 32 NEW feature programs that are likely to add signal on top
+of what is already in the model. Spend the budget well:
+ - vary the time window deliberately; the point of the search is to find which
+   horizon each relation actually wants
+ - prefer relations and normalisations that are not yet represented
+ - a few deliberate long shots are fine, but most proposals should be plausible
+Return ONLY a JSON array of 32 objects, each the program itself plus one extra
+key "why" with at most 12 words. No markdown fences, no prose outside the JSON.
