@@ -2551,16 +2551,26 @@ pip install -r requirements.txt
 <p>Отдельные шаги:</p>
 <pre><code class="language-bash">python scripts/prepare.py                 # CSV -&gt; parquet, таблицы атрибутов
 python scripts/build_candidates.py        # кандидаты и метки для восьми фолдов
-python tests/test_no_leakage.py           # пять тестов на утечки
+python tests/test_no_leakage.py           # шесть тестов на утечки
 python tests/test_engine_equivalence.py   # быстрый движок против эталонного
 python scripts/run_search.py --strategy evolution --seed 0
 python scripts/run_window_sweep.py        # рисунок с окнами
 python scripts/run_kernels.py             # обучаемые горизонты
 python scripts/run_baselines.py --scale main
-python scripts/run_final.py --scale main  # единственный скрипт, читающий тест
+python scripts/measure_noise_floor.py     # уровень шума на одинаковых признаках
+python scripts/run_final.py --scale main  # читает тестовые фолды
 python scripts/run_nested_extension.py    # расширение языка
+python scripts/show_features.py           # найденные признаки в виде SQL
 python scripts/make_tables.py &amp;&amp; python scripts/make_figures.py
+python scripts/analyze.py &amp;&amp; python scripts/make_report.py &amp;&amp; python scripts/make_pdf.py
 </code></pre>
+<p>Про память. Один прогон поиска доходит до 15–20 ГБ, итоговый замер на выборке
+40 000 с самым широким набором признаков — до 24 ГБ. Это не утечка в обычном
+смысле: polars удерживает несколько гигабайт внутренних буферов после
+группировок по атрибутам высокой кардинальности, и ни <code>malloc_trim</code>, ни
+ограничение арен аллокатора, ни потоковый движок их не возвращают. Поэтому
+скрипты рассчитаны на запуск по одному. На машине с 30 ГБ полный набор из
+шестнадцати плеч на выборках больше 40 000 пользователей не помещается.</p>
 <h2>Структура репозитория</h2>
 <pre><code>src/tlab/
   config.py      даты фолдов, масштабы выборок, пути
