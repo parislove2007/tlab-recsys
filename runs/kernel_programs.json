@@ -1,0 +1,290 @@
+[
+ {
+  "kind": "decay",
+  "anchor": "user",
+  "via": null,
+  "event": "start",
+  "halflife": 6.535,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "user",
+  "via": null,
+  "event": "start",
+  "halflife": 816.398,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "user",
+  "via": null,
+  "event": "watch",
+  "halflife": 1.751,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "user",
+  "via": null,
+  "event": "watch",
+  "halflife": 494.809,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "halflife": 0.632,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "halflife": 0.632,
+  "pool": null,
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "halflife": 19.197,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "start",
+  "halflife": 19.197,
+  "pool": null,
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "watch",
+  "halflife": 1.409,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "watch",
+  "halflife": 1.409,
+  "pool": null,
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "watch",
+  "halflife": 18.943,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "watch",
+  "halflife": 18.943,
+  "pool": null,
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "finish",
+  "halflife": 1.885,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "finish",
+  "halflife": 1.885,
+  "pool": null,
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "finish",
+  "halflife": 240.994,
+  "pool": null,
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "item",
+  "via": null,
+  "event": "finish",
+  "halflife": 240.994,
+  "pool": null,
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "halflife": 9.034,
+  "pool": "sum",
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "halflife": 9.034,
+  "pool": "sum",
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "halflife": 688.456,
+  "pool": "sum",
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "halflife": 688.456,
+  "pool": "sum",
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "directors",
+  "event": "start",
+  "halflife": 1.903,
+  "pool": "sum",
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "directors",
+  "event": "start",
+  "halflife": 1.903,
+  "pool": "sum",
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "directors",
+  "event": "start",
+  "halflife": 64.524,
+  "pool": "sum",
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "directors",
+  "event": "start",
+  "halflife": 64.524,
+  "pool": "sum",
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "halflife": 2.816,
+  "pool": "sum",
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "halflife": 2.816,
+  "pool": "sum",
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "halflife": 210.761,
+  "pool": "sum",
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "start",
+  "halflife": 210.761,
+  "pool": "sum",
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "halflife": 48.544,
+  "pool": "mean",
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "halflife": 48.544,
+  "pool": "mean",
+  "norm": "z_in_group"
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "halflife": 170.775,
+  "pool": "mean",
+  "norm": null
+ },
+ {
+  "kind": "decay",
+  "anchor": "attr_item",
+  "via": "genres",
+  "event": "start",
+  "halflife": 170.775,
+  "pool": "mean",
+  "norm": "z_in_group"
+ }
+]

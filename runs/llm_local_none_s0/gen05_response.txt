@@ -1,0 +1,171 @@
+```json
+[
+  {"agg":"nuniq_item","anchor":"attr","event":"start","kind":"agg","norm":"log1p","pool":"sum","via":"directors","window":30,"why":"New normalisation for directors."},
+  {"agg":"sum_dur","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_item","pool":"min","via":"genres","window":90,"why":"Long-tail genre trends."},
+  {"agg":"max_pct","anchor":"attr_item","event":"watch","kind":"agg","norm":"z_in_group","pool":"mean","via":"countries","window":180,"why":"Country-specific watch rates."},
+  {"agg":"nuniq_day","anchor":"attr","event":"start","kind":"agg","norm":"per_day","pool":"sum","via":"decade","window":60,"why":"Day-specific trends per decade."},
+  {"agg":"trend","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_user","pool":"max","via":"actors","window":120,"why":"User-specific trends."},
+  {"agg":"mean_dur","anchor":"attr_item","event":"watch","kind":"agg","norm":"log1p","pool":"min","via":"studios","window":30,"why":"Studio-specific watch duration."},
+  {"agg":"nuniq_user","anchor":"attr_item","event":"start","kind":"agg","norm":"rank_in_group","pool":"sum","via":"keywords","window":180,"why":"Keyword-specific user count."},
+  {"agg":"std_pct","anchor":"attr","event":"finish","kind":"agg","norm":"share_item","pool":"mean","via":"content_type","window":30,"why":"Content type trend variance."},
+  {"agg":"recency","anchor":"attr_item","event":"watch","kind":"agg","norm":"z_in_group","pool":"max","via":"age_rating","window":60,"why":"Age rating recency."},
+  {"agg":"nuniq_day","anchor":"attr","event":"start","kind":"agg","norm":"share_user","pool":"sum","via":"actors","window":90,"why":"User-specific day count."},
+  {"agg":"sum_dur","anchor":"attr_item","event":"finish","kind":"agg","norm":"log1p","pool":"max","via":"countries","window":120,"why":"Country-specific duration."},
+  {"agg":"max_pct","anchor":"attr","event":"watch","kind":"agg","norm":"share_item","pool":"mean","via":"decade","window":180,"why":"Decade-specific watch rates."},
+  {"agg":"nuniq_user","anchor":"attr_item","event":"start","kind":"agg","norm":"z_in_group","pool":"sum","via":"studios","window":120,"why":"Studio-specific user count."},
+  {"agg":"trend","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_user","pool":"max","via":"directors","window":90,"why":"Director-specific trends."},
+  {"agg":"mean_dur","anchor":"attr_item","event":"watch","kind":"agg","norm":"log1p","pool":"min","via":"keywords","window":120,"why":"Keyword-specific duration."},
+  {"agg":"nuniq_day","anchor":"attr","event":"start","kind":"agg","norm":"rank_in_group","pool":"sum","via":"studios","window":30,"why":"Studio-specific day count."},
+  {"agg":"sum_dur","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_user","pool":"min","via":"decade","window":60,"why":"Decade-specific duration."},
+  {"agg":"max_pct","anchor":"attr","event":"watch","kind":"agg","norm":"share_item","pool":"mean","via":"actors","window":180,"why":"Actor-specific watch rates."},
+  {"agg":"nuniq_user","anchor":"attr_item","event":"start","kind":"agg","norm":"z_in_group","pool":"sum","via":"countries","window":120,"why":"Country-specific user count."},
+  {"agg":"trend","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_user","pool":"max","via":"studios","window":30,"why":"Studio-specific trends."},
+  {"agg":"mean_dur","anchor":"attr_item","event":"watch","kind":"agg","norm":"log1p","pool":"min","via":"directors","window":90,"why":"Director-specific duration."},
+  {"agg":"nuniq_day","anchor":"attr","event":"start","kind":"agg","norm":"rank_in_group","pool":"sum","via":"age_rating","window":120,"why":"Age rating-specific day count."},
+  {"agg":"sum_dur","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_user","pool":"min","via":"content_type","window":30,"why":"Content type-specific duration."},
+  {"agg":"max_pct","anchor":"attr","event":"watch","kind":"agg","norm":"share_item","pool":"mean","via":"studios","window":60,"why":"Studio-specific watch rates."},
+  {"agg":"nuniq_user","anchor":"attr_item","event":"start","kind":"agg","norm":"z_in_group","pool":"sum","via":"directors","window":90,"why":"Director-specific user count."},
+  {"agg":"trend","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_user","pool":"max","via":"keywords","window":180,"why":"Keyword-specific trends."},
+  {"agg":"mean_dur","anchor":"attr_item","event":"watch","kind":"agg","norm":"log1p","pool":"min","via":"age_rating","window":180,"why":"Age rating-specific duration."}
+]
+```
+
+=== repair round ===
+A feature is a JSON object in this grammar.
+
+agg program:
+{"kind":"agg","anchor":A,"via":V,"event":E,"window":W,"agg":G,"norm":N,"pool":P}
+  anchor A  ['user', 'item', 'attr', 'attr_item']
+      user       - aggregate the user's own past events            -> one value per user
+      item       - aggregate the candidate item's past events      -> one value per item
+      attr       - the user's past events on items that share an attribute value
+                   with the candidate item (the indirect user-item link)
+      attr_item  - everyone's past events on items sharing the attribute value
+                   (how hot that genre / decade / director is right now)
+  via V     ['genres', 'countries', 'studios', 'directors', 'actors', 'keywords', 'content_type', 'decade', 'age_rating']            (required for attr and attr_item, else null)
+  event E   ['start', 'watch', 'finish']  (nested funnel: start = opened, watch = >=30% seen,
+                               finish = >=90% seen)
+  window W  [1, 3, 7, 14, 30, 60, 90, 180, None]   (days back from the prediction date; null = all history)
+  agg G     ['count', 'nuniq_item', 'nuniq_user', 'nuniq_day', 'mean_pct', 'max_pct', 'std_pct', 'sum_dur', 'mean_dur', 'recency', 'mean_age', 'trend']
+      recency  = days since the most recent matching event
+      mean_age = mean age in days of matching events
+      trend    = count in the recent half of the window / count in the older half
+  norm N    [None, 'log1p', 'per_day', 'share_user', 'share_item', 'z_in_group', 'rank_in_group']
+      per_day        divide by the window length
+      share_user     divide by the user's total event count in the same window
+      share_item     divide by the item's total event count in the same window
+      z_in_group     standardise within the candidate list of one user
+      rank_in_group  relative rank within the candidate list of one user
+  pool P    ['max', 'sum', 'mean', 'min']    (required for attr and attr_item: an item has several
+                               attribute values, this pools over them)
+
+compound programs:
+{"kind":"ratio","a":<agg>,"b":<agg>,"smooth":1.0}   a / (b + 1)
+{"kind":"mul","a":<agg>,"b":<agg>}                  a * b
+
+Rules the validator enforces: nuniq_user is rejected for anchor user/attr,
+nuniq_item for anchor item; per_day, share_user and share_item only apply to
+counting aggregates (count, nuniq_item, nuniq_user, nuniq_day, sum_dur);
+share_user needs anchor user or attr, share_item needs item or attr_item.
+
+Domain: KION, a Russian film and series streaming service. One row
+per (user, item) in the log, so a user never watches the same item twice and
+already-watched items are removed from the candidate list. Direct user-item
+history is therefore useless here and all personalisation has to come through
+indirect links. Task: for a prediction date T, rank ~100 candidate items for
+each user by whether they will be watched in the following seven days.
+Candidates come from popularity, ALS, item-item co-visitation and
+genre-popularity generators; their ranks and scores are already in the model,
+as are user demographics and item metadata.
+
+Already in the model (accepted): attr_item_deca_fin_w60_sum_dur_min_share_item, attr_keyw_sta_w90_nuniq_item_sum_share_user, attr_item_dire_wat_w7_mean_pct_max_z_in_group, attr_item_acto_sta_w90_count_max_log1p, attr_item_acto_wat_w60_nuniq_user_mea_z_in_group, attr_item_keyw_wat_w180_nuniq_user_min_log1p, attr_item_genr_sta_w180_nuniq_day_max_log1p, attr_item_coun_fin_w90_std_pct_max_rank_in_group, attr_coun_fin_w30_max_pct_mea_z_in_group, attr_stud_wat_w90_std_pct_max_rank_in_group, attr_item_acto_sta_w60_trend_min_rank_in_group, attr_item_dire_sta_w180_nuniq_day_max_share_item, attr_item_acto_fin_w30_mean_pct_max_log1p, attr_acto_wat_w30_sum_dur_mea_per_day, attr_item_coun_sta_w60_trend_max_rank_in_group, attr_keyw_sta_w90_sum_dur_mea_per_day, attr_item_deca_fin_w30_mean_pct_min_z_in_group, attr_item_age__wat_w30_nuniq_item_min_rank_in_group, attr_item_cont_sta_w30_nuniq_user_sum_log1p, attr_age__wat_w90_nuniq_item_sum_log1p
+
+Highest screening gain so far (gain = LightGBM split gain):
+      9720.5  {"agg":"sum_dur","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_item","pool":"min","via":"decade","window":60}
+      7543.6  {"agg":"sum_dur","anchor":"attr_item","event":"watch","kind":"agg","norm":null,"pool":"max","via":"actors","window":90}
+      4169.2  {"agg":"nuniq_item","anchor":"attr","event":"start","kind":"agg","norm":"share_user","pool":"sum","via":"keywords","window":90}
+      3963.3  {"agg":"mean_pct","anchor":"attr_item","event":"watch","kind":"agg","norm":"z_in_group","pool":"max","via":"directors","window":7}
+      3258.5  {"agg":"count","anchor":"attr_item","event":"start","kind":"agg","norm":"log1p","pool":"max","via":"actors","window":90}
+      3085.5  {"agg":"nuniq_user","anchor":"attr_item","event":"watch","kind":"agg","norm":"z_in_group","pool":"mean","via":"actors","window":60}
+      2868.7  {"agg":"nuniq_user","anchor":"attr_item","event":"watch","kind":"agg","norm":"log1p","pool":"min","via":"keywords","window":180}
+      2672.1  {"agg":"trend","anchor":"attr_item","event":"finish","kind":"agg","norm":"z_in_group","pool":"min","via":"content_type","window":60}
+      2535.6  {"agg":"trend","anchor":"attr_item","event":"start","kind":"agg","norm":"rank_in_group","pool":"min","via":"actors","window":60}
+      2493.2  {"agg":"nuniq_day","anchor":"attr_item","event":"start","kind":"agg","norm":"share_item","pool":"max","via":"directors","window":180}
+      2401.9  {"agg":"nuniq_day","anchor":"attr_item","event":"start","kind":"agg","norm":"log1p","pool":"max","via":"genres","window":180}
+      2380.0  {"agg":"std_pct","anchor":"attr_item","event":"finish","kind":"agg","norm":"rank_in_group","pool":"max","via":"countries","window":90}
+      2305.1  {"agg":"mean_pct","anchor":"attr_item","event":"finish","kind":"agg","norm":"log1p","pool":"max","via":"actors","window":30}
+      2079.5  {"agg":"sum_dur","anchor":"attr","event":"watch","kind":"agg","norm":"per_day","pool":"mean","via":"actors","window":30}
+      1624.7  {"agg":"trend","anchor":"attr_item","event":"start","kind":"agg","norm":"rank_in_group","pool":"max","via":"countries","window":60}
+      1431.9  {"agg":"max_pct","anchor":"attr","event":"finish","kind":"agg","norm":"z_in_group","pool":"mean","via":"countries","window":30}
+      1400.4  {"agg":"sum_dur","anchor":"attr","event":"start","kind":"agg","norm":"per_day","pool":"mean","via":"keywords","window":90}
+       981.8  {"agg":"mean_pct","anchor":"attr_item","event":"finish","kind":"agg","norm":"z_in_group","pool":"min","via":"decade","window":30}
+
+Scored exactly zero gain (do not propose these shapes again):
+  {"agg":"max_pct","anchor":"attr_item","event":"finish","kind":"agg","norm":null,"pool":"max","via":"age_rating","window":90}
+  {"agg":"sum_dur","anchor":"attr_item","event":"start","kind":"agg","norm":"rank_in_group","pool":"max","via":"actors","window":1}
+  {"agg":"recency","anchor":"attr","event":"watch","kind":"agg","norm":"z_in_group","pool":"max","via":"countries","window":1}
+  {"agg":"max_pct","anchor":"attr_item","event":"finish","kind":"agg","norm":"rank_in_group","pool":"min","via":"decade","window":90}
+  {"agg":"max_pct","anchor":"attr_item","event":"start","kind":"agg","norm":"z_in_group","pool":"mean","via":"keywords","window":90}
+  {"agg":"max_pct","anchor":"attr_item","event":"start","kind":"agg","norm":"z_in_group","pool":"min","via":"studios","window":90}
+  {"agg":"max_pct","anchor":"attr_item","event":"watch","kind":"agg","norm":"z_in_group","pool":"min","via":"studios","window":60}
+  {"agg":"max_pct","anchor":"attr_item","event":"start","kind":"agg","norm":"log1p","pool":"sum","via":"studios","window":90}
+
+Validation NDCG@10 is 0.2719 with 20 searched features after 41 proposals.
+1 block(s) were rejected for not improving validation.
+
+Propose 32 NEW feature programs that are likely to add signal on top
+of what is already in the model. Spend the budget well:
+ - vary the time window deliberately; the point of the search is to find which
+   horizon each relation actually wants
+ - prefer relations and normalisations that are not yet represented
+ - a few deliberate long shots are fine, but most proposals should be plausible
+Return ONLY a JSON array of 32 objects, each the program itself plus one extra
+key "why" with at most 12 words. No markdown fences, no prose outside the JSON.
+
+Your previous answer was rejected by the validator. Here are the first failures, verbatim:
+  {"agg": "trend", "anchor": "attr_item", "event": "finish", "kind": "agg", "norm": "share_user", "pool": "max", "via": "actors", "window": 120} -> window 120
+  {"agg": "std_pct", "anchor": "attr", "event": "finish", "kind": "agg", "norm": "share_item", "pool": "mean", "via": "content_type", "window": 30} -> share_item needs an item-keyed anchor
+  {"agg": "sum_dur", "anchor": "attr_item", "event": "finish", "kind": "agg", "norm": "log1p", "pool": "max", "via": "countries", "window": 120} -> window 120
+  {"agg": "max_pct", "anchor": "attr", "event": "watch", "kind": "agg", "norm": "share_item", "pool": "mean", "via": "decade", "window": 180} -> share_item needs an item-keyed anchor
+  {"agg": "nuniq_user", "anchor": "attr_item", "event": "start", "kind": "agg", "norm": "z_in_group", "pool": "sum", "via": "studios", "window": 120} -> window 120
+  {"agg": "trend", "anchor": "attr_item", "event": "finish", "kind": "agg", "norm": "share_user", "pool": "max", "via": "directors", "window": 90} -> share_user needs a user-keyed anchor
+  {"agg": "mean_dur", "anchor": "attr_item", "event": "watch", "kind": "agg", "norm": "log1p", "pool": "min", "via": "keywords", "window": 120} -> window 120
+  {"agg": "sum_dur", "anchor": "attr_item", "event": "finish", "kind": "agg", "norm": "share_user", "pool": "min", "via": "decade", "window": 60} -> share_user needs a user-keyed anchor
+  {"agg": "max_pct", "anchor": "attr", "event": "watch", "kind": "agg", "norm": "share_item", "pool": "mean", "via": "actors", "window": 180} -> share_item needs an item-keyed anchor
+  {"agg": "nuniq_user", "anchor": "attr_item", "event": "start", "kind": "agg", "norm": "z_in_group", "pool": "sum", "via": "countries", "window": 120} -> window 120
+
+Fix these mistakes and return a fresh JSON array of 32 valid programs. Remember: anchor user and item take via = null and pool = null; use JSON null, not the string "None".
+
+=== response ===
+```json
+[
+  {"agg":"sum_dur","anchor":"item","event":"start","kind":"agg","norm":"null","pool":"null","why":"item history"},
+  {"agg":"nuniq_item","anchor":"user","event":"finish","kind":"agg","norm":"null","pool":"null","why":"user past events"},
+  {"agg":"mean_pct","anchor":"attr_item","event":"watch","kind":"agg","norm":"log1p","pool":"max","via":"directors","window":30,"why":"indirect user-item link"},
+  {"agg":"std_pct","anchor":"attr","event":"finish","kind":"agg","norm":"z_in_group","pool":"mean","via":"genres","window":180,"why":"genre popularity"},
+  {"agg":"trend","anchor":"attr_item","event":"start","kind":"agg","norm":"rank_in_group","pool":"min","via":"countries","window":60,"why":"country popularity"},
+  {"agg":"max_pct","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_item","pool":"mean","via":"actors","window":90,"why":"actor's past events"},
+  {"agg":"nuniq_day","anchor":"attr","event":"watch","kind":"agg","norm":"per_day","pool":"sum","via":"studios","window":120,"why":"studio popularity"},
+  {"agg":"mean_dur","anchor":"attr_item","event":"start","kind":"agg","norm":"null","pool":"max","via":"content_type","window":15,"why":"content type history"},
+  {"agg":"sum_dur","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_user","pool":"mean","via":"decade","window":45,"why":"decade popularity"},
+  {"agg":"nuniq_user","anchor":"attr_item","event":"start","kind":"agg","norm":"log1p","pool":"sum","via":"keywords","window":180,"why":"keyword popularity"},
+  {"agg":"trend","anchor":"attr_item","event":"watch","kind":"agg","norm":"share_item","pool":"min","via":"actors","window":30,"why":"actor's past events"},
+  {"agg":"max_pct","anchor":"attr_item","event":"finish","kind":"agg","norm":"z_in_group","pool":"max","via":"countries","window":120,"why":"country popularity"},
+  {"agg":"nuniq_day","anchor":"attr","event":"watch","kind":"agg","norm":"null","pool":"mean","via":"studios","window":90,"why":"studio popularity"},
+  {"agg":"mean_dur","anchor":"attr_item","event":"start","kind":"agg","norm":"share_user","pool":"sum","via":"content_type","window":180,"why":"content type history"},
+  {"agg":"sum_dur","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_item","pool":"mean","via":"decade","window":60,"why":"decade popularity"},
+  {"agg":"nuniq_user","anchor":"attr_item","event":"start","kind":"agg","norm":"log1p","pool":"sum","via":"keywords","window":120,"why":"keyword popularity"},
+  {"agg":"trend","anchor":"attr_item","event":"watch","kind":"agg","norm":"share_item","pool":"min","via":"actors","window":180,"why":"actor's past events"},
+  {"agg":"max_pct","anchor":"attr_item","event":"finish","kind":"agg","norm":"z_in_group","pool":"max","via":"countries","window":30,"why":"country popularity"},
+  {"agg":"nuniq_day","anchor":"attr","event":"watch","kind":"agg","norm":"null","pool":"mean","via":"studios","window":15,"why":"studio popularity"},
+  {"agg":"mean_dur","anchor":"attr_item","event":"start","kind":"agg","norm":"share_user","pool":"sum","via":"content_type","window":90,"why":"content type history"},
+  {"agg":"sum_dur","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_item","pool":"mean","via":"decade","window":45,"why":"decade popularity"},
+  {"agg":"nuniq_user","anchor":"attr_item","event":"start","kind":"agg","norm":"log1p","pool":"sum","via":"keywords","window":60,"why":"keyword popularity"},
+  {"agg":"trend","anchor":"attr_item","event":"watch","kind":"agg","norm":"share_item","pool":"min","via":"actors","window":30,"why":"actor's past events"},
+  {"agg":"max_pct","anchor":"attr_item","event":"finish","kind":"agg","norm":"z_in_group","pool":"max","via":"countries","window":120,"why":"country popularity"},
+  {"agg":"nuniq_day","anchor":"attr","event":"watch","kind":"agg","norm":"null","pool":"mean","via":"studios","window":90,"why":"studio popularity"},
+  {"agg":"mean_dur","anchor":"attr_item","event":"start","kind":"agg","norm":"share_user","pool":"sum","via":"content_type","window":180,"why":"content type history"},
+  {"agg":"sum_dur","anchor":"attr_item","event":"finish","kind":"agg","norm":"share_item","pool":"mean","via":"decade","window":60,"why":"decade popularity"},
+  {"agg":"nuniq_user","anchor":"attr_item","event":"start","kind":"agg","norm":"log1p","pool":"sum","via":"keywords","window":120,"why":"keyword popularity"}
+]
+```

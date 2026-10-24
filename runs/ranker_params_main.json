@@ -1,0 +1,54 @@
+{
+ "params": {
+  "num_leaves": 63,
+  "learning_rate": 0.04,
+  "lambda_l2": 8.0
+ },
+ "trials": [
+  {
+   "params": {},
+   "val_ndcg": 0.28687930090856284,
+   "iters": 289,
+   "train_seconds": 122.5
+  },
+  {
+   "params": {
+    "num_leaves": 127,
+    "min_data_in_leaf": 40
+   },
+   "val_ndcg": 0.28300490923694516,
+   "iters": 169,
+   "train_seconds": 94.99
+  },
+  {
+   "params": {
+    "num_leaves": 31,
+    "min_data_in_leaf": 120,
+    "learning_rate": 0.08
+   },
+   "val_ndcg": 0.28615820153786753,
+   "iters": 252,
+   "train_seconds": 94.77
+  },
+  {
+   "params": {
+    "num_leaves": 63,
+    "learning_rate": 0.04,
+    "lambda_l2": 8.0
+   },
+   "val_ndcg": 0.28760716865843317,
+   "iters": 300,
+   "train_seconds": 139.87
+  },
+  {
+   "params": {
+    "num_leaves": 63,
+    "lambda_l2": 0.5,
+    "feature_fraction": 0.6
+   },
+   "val_ndcg": 0.2868404914875886,
+   "iters": 188,
+   "train_seconds": 86.42
+  }
+ ]
+}

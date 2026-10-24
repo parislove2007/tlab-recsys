@@ -370,6 +370,32 @@ class FoldEngine:
             self._istats[key] = df.group_by("item_id").agg(_item_components(window))
         return self._istats[key]
 
+    def _attr_item_grouped(self, via, event, window, agg, batch=256):
+        """Attribute-level aggregate over the whole population.
+
+        This aggregate does not decompose, so the event log really has to be
+        joined to the attribute table: 5.4M events against ~16 keywords each is
+        87M rows. Batching over attribute values keeps the result exact while
+        bounding the size of the intermediate join; the outputs are a few
+        thousand rows and are concatenated at the end. Note that this bounds the
+        join, not the resident set: polars holds on to a few gigabytes of
+        internal buffers after a group-by of this shape, which is why the
+        pipeline runs one heavy process at a time.
+        """
+        amap = self._attr_map(via)
+        df = self._global(event)
+        if window is not None:
+            df = df.filter(pl.col("age") < window)
+        values = amap["value"].unique().sort()
+        parts = []
+        for i in range(0, len(values), batch):
+            chunk = amap.filter(pl.col("value").is_in(values[i:i + batch]))
+            parts.append(df.join(chunk, on="item_id")
+                           .group_by("value")
+                           .agg(AGG_EXPR[agg](window).alias("v")))
+        return pl.concat(parts) if parts else pl.DataFrame(
+            schema={"value": pl.Utf8, "v": pl.Float64})
+
     def _grouped(self, anchor, via, event, window, agg):
         key = (anchor, via, event, window, agg)
         if key in self._grp:
@@ -389,14 +415,16 @@ class FoldEngine:
             agg_exprs.append(pl.len().cast(pl.Float64).alias("n_items"))
             out = (st.group_by("value").agg(agg_exprs)
                      .select("value", _derive(agg, window).alias("v")))
+        elif anchor == "attr_item":
+            # the aggregate does not decompose, so the whole event log has to be
+            # joined to the attribute table: 5.4M events times ~16 keywords is
+            # 86M rows and several gigabytes if it is materialised at once
+            out = self._attr_item_grouped(via, event, window, agg)
         else:
-            df = (self._own_joined(event, via) if (anchor == "attr")
-                  else self.u[event] if anchor == "user"
-                  else self._global(event).join(self._attr_map(via), on="item_id"))
+            df = (self._own_joined(event, via) if anchor == "attr" else self.u[event])
             if window is not None:
                 df = df.filter(pl.col("age") < window)
-            keys = {"user": ["user_id"], "attr": ["user_id", "value"],
-                    "attr_item": ["value"]}[anchor]
+            keys = {"user": ["user_id"], "attr": ["user_id", "value"]}[anchor]
             out = df.group_by(keys).agg(AGG_EXPR[agg](window).alias("v"))
 
         out = out.with_columns(pl.col("v").cast(pl.Float32))
@@ -480,15 +508,19 @@ class FoldEngine:
         if key in self._grp:
             return self._grp[key]
         lam = math.log(2.0) / float(halflife)
-        df = (self._own_joined(event, via) if anchor == "attr"
-              else self.u[event] if anchor == "user"
-              else self._global(event) if anchor == "item"
-              else self._global(event).join(self._attr_map(via), on="item_id"))
+        decayed = (pl.col("age").cast(pl.Float64) * (-lam)).exp().sum().alias("v")
         keys = {"user": ["user_id"], "item": ["item_id"],
                 "attr": ["user_id", "value"], "attr_item": ["value"]}[anchor]
-        out = (df.group_by(keys)
-                 .agg((pl.col("age").cast(pl.Float64) * (-lam)).exp().sum().alias("v"))
-                 .with_columns(pl.col("v").cast(pl.Float32)))
+        if anchor == "attr_item":
+            out = (self._global(event).lazy()
+                   .join(self._attr_map(via).lazy(), on="item_id")
+                   .group_by(keys).agg(decayed).collect(engine="streaming"))
+        else:
+            df = (self._own_joined(event, via) if anchor == "attr"
+                  else self.u[event] if anchor == "user"
+                  else self._global(event))
+            out = df.group_by(keys).agg(decayed)
+        out = out.with_columns(pl.col("v").cast(pl.Float32))
         if out.height <= self.MAX_CACHED_ROWS:
             if len(self._grp) >= self.grp_cache:
                 self._grp.pop(next(iter(self._grp)))
@@ -617,6 +649,32 @@ class FoldEngine:
 class SlowEngine(FoldEngine):
     """Reference implementation: every aggregate is computed by grouping the raw
     event rows. Only used by the test that checks the fast path against it."""
+
+    def _attr_item_grouped(self, via, event, window, agg, batch=256):
+        """Attribute-level aggregate over the whole population.
+
+        This aggregate does not decompose, so the event log really has to be
+        joined to the attribute table: 5.4M events against ~16 keywords each is
+        87M rows. Batching over attribute values keeps the result exact while
+        bounding the size of the intermediate join; the outputs are a few
+        thousand rows and are concatenated at the end. Note that this bounds the
+        join, not the resident set: polars holds on to a few gigabytes of
+        internal buffers after a group-by of this shape, which is why the
+        pipeline runs one heavy process at a time.
+        """
+        amap = self._attr_map(via)
+        df = self._global(event)
+        if window is not None:
+            df = df.filter(pl.col("age") < window)
+        values = amap["value"].unique().sort()
+        parts = []
+        for i in range(0, len(values), batch):
+            chunk = amap.filter(pl.col("value").is_in(values[i:i + batch]))
+            parts.append(df.join(chunk, on="item_id")
+                           .group_by("value")
+                           .agg(AGG_EXPR[agg](window).alias("v")))
+        return pl.concat(parts) if parts else pl.DataFrame(
+            schema={"value": pl.Utf8, "v": pl.Float64})
 
     def _grouped(self, anchor, via, event, window, agg):
         key = ("slow", anchor, via, event, window, agg)

@@ -1,0 +1,242 @@
+[
+ {
+  "agg": "nuniq_item",
+  "anchor": "attr",
+  "event": "start",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "sum",
+  "via": "directors",
+  "window": 30
+ },
+ {
+  "agg": "sum_dur",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "share_item",
+  "pool": "min",
+  "via": "genres",
+  "window": 90
+ },
+ {
+  "agg": "max_pct",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "mean",
+  "via": "countries",
+  "window": 180
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr",
+  "event": "start",
+  "kind": "agg",
+  "norm": "per_day",
+  "pool": "sum",
+  "via": "decade",
+  "window": 60
+ },
+ {
+  "agg": "mean_dur",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "min",
+  "via": "studios",
+  "window": 30
+ },
+ {
+  "agg": "nuniq_user",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "rank_in_group",
+  "pool": "sum",
+  "via": "keywords",
+  "window": 180
+ },
+ {
+  "agg": "recency",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "max",
+  "via": "age_rating",
+  "window": 60
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr",
+  "event": "start",
+  "kind": "agg",
+  "norm": "share_user",
+  "pool": "sum",
+  "via": "actors",
+  "window": 90
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr",
+  "event": "start",
+  "kind": "agg",
+  "norm": "rank_in_group",
+  "pool": "sum",
+  "via": "studios",
+  "window": 30
+ },
+ {
+  "agg": "mean_dur",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "min",
+  "via": "directors",
+  "window": 90
+ },
+ {
+  "agg": "nuniq_user",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "sum",
+  "via": "directors",
+  "window": 90
+ },
+ {
+  "agg": "mean_dur",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "min",
+  "via": "age_rating",
+  "window": 180
+ },
+ {
+  "agg": "sum_dur",
+  "anchor": "item",
+  "event": "start",
+  "kind": "agg",
+  "norm": null,
+  "pool": null,
+  "via": null,
+  "window": null
+ },
+ {
+  "agg": "nuniq_item",
+  "anchor": "user",
+  "event": "finish",
+  "kind": "agg",
+  "norm": null,
+  "pool": null,
+  "via": null,
+  "window": null
+ },
+ {
+  "agg": "mean_pct",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "max",
+  "via": "directors",
+  "window": 30
+ },
+ {
+  "agg": "std_pct",
+  "anchor": "attr",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "mean",
+  "via": "genres",
+  "window": 180
+ },
+ {
+  "agg": "trend",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "rank_in_group",
+  "pool": "min",
+  "via": "countries",
+  "window": 60
+ },
+ {
+  "agg": "nuniq_user",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "sum",
+  "via": "keywords",
+  "window": 180
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr",
+  "event": "watch",
+  "kind": "agg",
+  "norm": null,
+  "pool": "mean",
+  "via": "studios",
+  "window": 90
+ },
+ {
+  "agg": "sum_dur",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "share_item",
+  "pool": "mean",
+  "via": "decade",
+  "window": 60
+ },
+ {
+  "agg": "max_pct",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "max",
+  "via": "countries",
+  "window": 30
+ },
+ {
+  "agg": "nuniq_user",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "sum",
+  "via": "keywords",
+  "window": 60
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr",
+  "event": "watch",
+  "kind": "agg",
+  "norm": null,
+  "pool": "mean",
+  "via": "studios",
+  "window": 90
+ },
+ {
+  "agg": "sum_dur",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "share_item",
+  "pool": "mean",
+  "via": "decade",
+  "window": 60
+ }
+]

@@ -180,11 +180,12 @@ if bl.exists():
 # ---- kernels
 for f in sorted(glob.glob(str(RUNS / "kernels_*.json"))):
     d = json.loads(pathlib.Path(f).read_text())
-    h("Выученные временные горизонты")
+    h(f"Выученные временные горизонты (выборка {d['n_users']} юзеров)")
     table(["отношение", "быстрое ядро, дней полураспада", "медленное ядро, дней"],
           [[REL_RU.get(k, k), v["half_life_days"][0], v["half_life_days"][1]]
            for k, v in d["learned_half_lives"].items()])
-    h("Ядра внутри градиентного бустинга", 4)
+    h(f"Ядра внутри градиентного бустинга (та же выборка {d['n_users']} юзеров, "
+      "не сравнивать напрямую с основной таблицей)", 4)
     table(["набор", "признаков", "val NDCG@10", "test NDCG@10", "test абс."],
           [[k, v["n_features"], f4(v["val"]["ndcg@10"]), f4(v["test"]["ndcg@10"]),
             f4(v["test"]["ndcg@10_abs"])] for k, v in d["gbdt"].items()])
