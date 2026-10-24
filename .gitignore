@@ -6,4 +6,3 @@ __pycache__/
 logs/
 runs/peruser_*.parquet
 runs/pufinal_*.parquet
-report.pdf
