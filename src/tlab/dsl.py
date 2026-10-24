@@ -705,15 +705,37 @@ def _sql_agg(p, alias="v"):
     return sql, keys
 
 
+def _join_on(p, alias):
+    """How a sub-select attaches to the candidate table."""
+    a = p["anchor"]
+    if a == "user":
+        return f"{alias}.user_id = c.user_id"
+    if a == "item":
+        return f"{alias}.item_id = c.item_id"
+    if a == "attr":
+        return (f"{alias}.user_id = c.user_id AND {alias}.value = ca.value"
+                f"  -- ca: the candidate item's '{p['via']}' values, pooled with {p['pool'].upper()}")
+    return (f"{alias}.value = ca.value"
+            f"  -- ca: the candidate item's '{p['via']}' values, pooled with {p['pool'].upper()}")
+
+
 def to_sql(p, indent=""):
     """A readable SQL rendering of a program. `:T` is the prediction date."""
     k = p["kind"]
     if k in ("ratio", "mul"):
-        op = "/" if k == "ratio" else "*"
-        rhs = "(den.v + 1)" if k == "ratio" else "den.v"
+        expr = "l.v / (r.v + 1)" if k == "ratio" else "l.v * r.v"
+        needs_attr = any(q["anchor"] in ("attr", "attr_item") for q in (p["a"], p["b"]))
+        attr_join = ""
+        if needs_attr:
+            via = next(q["via"] for q in (p["a"], p["b"])
+                       if q["anchor"] in ("attr", "attr_item"))
+            attr_join = f"\nJOIN item_attr ca ON ca.item_id = c.item_id AND ca.attr = '{via}'"
         return (f"-- {name(p)}\n"
-                f"WITH num AS (\n{to_sql(p['a'])}\n), den AS (\n{to_sql(p['b'])}\n)\n"
-                f"SELECT num.v {op} {rhs} AS value FROM num, den  -- joined on the shared keys")
+                f"WITH l AS (\n{to_sql(p['a'])}\n), r AS (\n{to_sql(p['b'])}\n)\n"
+                f"SELECT c.user_id, c.item_id, {expr} AS value\n"
+                f"FROM candidates c{attr_join}\n"
+                f"LEFT JOIN l ON {_join_on(p['a'], 'l')}\n"
+                f"LEFT JOIN r ON {_join_on(p['b'], 'r')}")
     if k == "decay":
         a, via, w = p["anchor"], p.get("via"), None
         base, keys = _sql_agg({**p, "agg": "count", "window": None}, "v")
