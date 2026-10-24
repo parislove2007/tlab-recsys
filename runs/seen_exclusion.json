@@ -1,0 +1,58 @@
+{
+ "n_users": 20000,
+ "n_cand": 100,
+ "folds": [
+  {
+   "T": "2021-08-09",
+   "drop_seen": false,
+   "users_ranked": 20000,
+   "rows": 2000000,
+   "cand_pos": 3468,
+   "reachable_pos": 11021,
+   "cand_recall": 0.3147,
+   "users_with_target": 3957
+  },
+  {
+   "T": "2021-08-09",
+   "drop_seen": true,
+   "users_ranked": 20000,
+   "rows": 2000000,
+   "cand_pos": 3547,
+   "reachable_pos": 11021,
+   "cand_recall": 0.3218,
+   "users_with_target": 3957
+  },
+  {
+   "T": "2021-08-16",
+   "drop_seen": false,
+   "users_ranked": 20000,
+   "rows": 2000000,
+   "cand_pos": 3621,
+   "reachable_pos": 10659,
+   "cand_recall": 0.3397,
+   "users_with_target": 3734
+  },
+  {
+   "T": "2021-08-16",
+   "drop_seen": true,
+   "users_ranked": 20000,
+   "rows": 2000000,
+   "cand_pos": 3715,
+   "reachable_pos": 10659,
+   "cand_recall": 0.3485,
+   "users_with_target": 3734
+  }
+ ],
+ "summary": {
+  "with_seen": {
+   "cand_recall": 0.3272,
+   "cand_pos": 7089,
+   "reachable_pos": 21680
+  },
+  "without_seen": {
+   "cand_recall": 0.3351,
+   "cand_pos": 7262,
+   "reachable_pos": 21680
+  }
+ }
+}

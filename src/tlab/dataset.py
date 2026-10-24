@@ -5,6 +5,9 @@ import scipy.sparse as sp
 
 from .config import DATA, TARGET_DAYS, SEED
 
+# only the measurement script flips this; the pipeline always drops seen items
+_DROP_SEEN = True
+
 
 def load_events():
     return pl.read_parquet(DATA / "events.parquet")
@@ -186,7 +189,8 @@ def build_fold(events, users, T, n_cand, keep_only_positive_groups=True):
     # one row per (user, item) in KION, so an item already watched can never be
     # a future target; dropping seen items removes guaranteed negatives
     seen = uhist.select("user_id", "item_id").unique()
-    cand = cand.join(seen, on=["user_id", "item_id"], how="anti")
+    if _DROP_SEEN:
+        cand = cand.join(seen, on=["user_id", "item_id"], how="anti")
     cand = cand.with_columns(
         (1.0 / (20 + pl.col("rank_pop").fill_null(10_000))
          + 1.0 / (20 + pl.col("rank_als").fill_null(10_000))

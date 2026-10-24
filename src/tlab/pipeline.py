@@ -1,3 +1,5 @@
+import gc
+
 import numpy as np
 import polars as pl
 
@@ -118,8 +120,14 @@ class Bundle:
     def base_cols(self):
         return list(self.folds[self.dates[0]]["base"].columns)
 
-    def features(self, progs, max_cache=150):
-        """Per-fold feature frames for the given programs, caching by program."""
+    def features(self, progs, max_cache=100):
+        """Per-fold feature frames for the given programs, caching by program.
+
+        The engines' intermediate groupings are dropped after each fold: for
+        high-cardinality attributes a single cached grouping can be millions of
+        rows, and over a long search they are what exhausts memory. Finished
+        columns stay in `_cache`, which is what the search actually reuses.
+        """
         out = {}
         for T in self.dates:
             f = self.folds[T]
@@ -134,12 +142,19 @@ class Bundle:
                 got = f["engine"].compute(need, f["cand"])
                 for p in need:
                     nm = name(p)
-                    s = got[nm]
-                    self._cache[(T, canon(p))] = s
-                    cols[nm] = s
+                    col = got[nm]
+                    self._cache[(T, canon(p))] = col
+                    cols[nm] = col
+                e = f["engine"]
+                e._grp.clear()
+                e._own_attr.clear()
+                e._istats.clear()
+                e._seg.clear()
+                del got
             out[T] = pl.DataFrame({name(p): cols[name(p)] for p in progs})
         if len(self._cache) > max_cache * len(self.dates):
             self._cache.clear()
+            gc.collect()
         return out
 
     def matrix(self, progs, use_base=True):
