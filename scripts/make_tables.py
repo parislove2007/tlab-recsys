@@ -192,6 +192,47 @@ for f in sorted(glob.glob(str(RUNS / "kernels_*.json"))):
     out.append(f"Модель только на ядрах, без бустинга: test NDCG@10 = "
                f"{d['standalone']['test']['ndcg@10']:.4f}.\n")
 
+# ---- scale transfer
+xl = [("runs/final_xl70k.json", "70 000"), ("runs/final_xl100k_partial.json", "100 000")]
+rows40 = {}
+if (RUNS / "final_main.json").exists():
+    rows40 = {k: v["test"]["ndcg@10"]
+              for k, v in json.loads((RUNS / "final_main.json").read_text())["results"].items()}
+have = [(pathlib.Path(f), lbl) for f, lbl in xl if (REPORTS.parent / f).exists()]
+if have and rows40:
+    h("Переносится ли найденный набор на большую выборку")
+    cols, data = [], {}
+    for f, lbl in have:
+        d = json.loads((REPORTS.parent / f).read_text())
+        cols.append(lbl)
+        for k, v in d["results"].items():
+            data.setdefault(k, {})[lbl] = v["test"]["ndcg@10"]
+    names = [k for k in data if k in rows40]
+    table(["набор", "40 000 (основная)"] + [f"{c} юзеров" for c in cols],
+          [[k, f"{rows40[k]:.4f}"] + [f"{data[k].get(c, float('nan')):.4f}" for c in cols]
+           for k in names])
+    out.append("Выборки вложены не полностью, поэтому колонки сравнивать между собой "
+               "нужно только внутри одной строки относительно ручного набора. "
+               "Полный набор из 16 плеч на 70 000 и 100 000 не поместился в память "
+               "(процесс доходил до 25 ГБ), поэтому здесь только четыре ключевых: "
+               "база, ручной набор, лучший найденный и контроль на шум.\n")
+
+# ---- brute-force reference
+gr = RUNS / "final_gridref.json"
+if gr.exists():
+    d = json.loads(gr.read_text())
+    keep = {k: v for k, v in d["results"].items() if k in ("BASE", "BASE+HUMAN", "BASE+GRID")}
+    if "BASE+GRID" in keep:
+        h("Нужен ли поиск, если можно посчитать всё подряд")
+        table(["набор", "прогр.", "призн.", "val NDCG@10", "test NDCG@10", "призн., с"],
+              [[k, v.get("n_programs", 0), v["n_features"], f4(v["val"]["ndcg@10"]),
+                f4(v["test"]["ndcg@10"]), f"{v['feature_seconds']:.0f}"]
+               for k, v in keep.items()])
+        out.append(f"Измерено на поисковой выборке {d['n_users']} пользователей, где "
+                   "сетка помещается по времени и памяти. Сетка содержит те же 480 "
+                   "программ, что составляют бюджет одной стратегии поиска, но "
+                   "перечисленные систематически, без отбора.\n")
+
 # ---- cost of each approach
 fin = RUNS / "final_main.json"
 if fin.exists() and runs:
