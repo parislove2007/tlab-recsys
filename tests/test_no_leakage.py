@@ -159,18 +159,6 @@ def test_shuffled_labels_destroy_the_signal():
     return m["ndcg@10"], chance
 
 
-if __name__ == "__main__":
-    for fn in [test_engine_refuses_future_events, test_window_boundary_is_half_open,
-               test_features_invariant_to_future_events,
-               test_candidates_are_a_function_of_the_past]:
-        fn()
-        print(f"  ok  {fn.__name__}")
-    n = test_every_program_renders_as_backward_looking_sql()
-    print(f"  ok  test_every_program_renders_as_backward_looking_sql ({n} programs)")
-    got, chance = test_shuffled_labels_destroy_the_signal()
-    print(f"  ok  test_shuffled_labels_destroy_the_signal (ndcg {got:.4f} vs chance {chance:.4f})")
-
-
 def test_every_program_renders_as_backward_looking_sql():
     """A syntactic audit on top of the behavioural ones: the SQL rendering of
     any program in the language must filter the event log one-sidedly."""
@@ -185,3 +173,15 @@ def test_every_program_renders_as_backward_looking_sql():
             bad.append(name(p) + " (looks forward)")
     assert not bad, f"{len(bad)} of {len(progs)} renderings are suspect: {bad[:5]}"
     return len(progs)
+
+
+if __name__ == "__main__":
+    for fn in [test_engine_refuses_future_events, test_window_boundary_is_half_open,
+               test_features_invariant_to_future_events,
+               test_candidates_are_a_function_of_the_past]:
+        fn()
+        print(f"  ok  {fn.__name__}")
+    n = test_every_program_renders_as_backward_looking_sql()
+    print(f"  ok  test_every_program_renders_as_backward_looking_sql ({n} programs)")
+    got, chance = test_shuffled_labels_destroy_the_signal()
+    print(f"  ok  test_shuffled_labels_destroy_the_signal (ndcg {got:.4f} vs chance {chance:.4f})")
