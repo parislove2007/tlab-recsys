@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 logs/
 runs/peruser_*.parquet
+runs/pufinal_*.parquet

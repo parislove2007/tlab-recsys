@@ -35,6 +35,7 @@ ap.add_argument("--no-tune", action="store_true",
                 help="skip the validation grid and use the default ranker settings")
 ap.add_argument("--best-seed-only", action="store_true",
                 help="keep only the best validation seed of each search strategy")
+ap.add_argument("--users", type=int, default=0, help="override the scale, for smoke tests")
 a = ap.parse_args()
 
 HUMAN = human_programs()
@@ -57,6 +58,19 @@ for f in sorted(glob.glob(str(RUNS / a.runs))):
                    "programs_evaluated": r["evaluator_cost"]["programs"]}
     print(f"loaded {label}: {len(progs)} programs", flush=True)
 
+# runs that started from the hand-written set: what the search adds on top of a
+# human baseline when it begins there, rather than two sets being merged
+for f in sorted(glob.glob(str(RUNS / "search_*_human_s*.json"))):
+    r = json.loads(pathlib.Path(f).read_text())
+    extra = [p for p in r["accepted"] if canon(p) not in {canon(q) for q in HUMAN}]
+    label = f"HUMAN+SEARCH-ON-TOP:{r['strategy']}:s{r['seed']}"
+    sets[label] = HUMAN + extra
+    meta[label] = {"n_programs": len(HUMAN) + len(extra), "added_on_top": len(extra),
+                   "strategy": r["strategy"], "seed": r["seed"],
+                   "search_val_ndcg": r["val_trace"][-1]["val_ndcg"],
+                   "programs_evaluated": r["evaluator_cost"]["programs"]}
+    print(f"loaded {label}: +{len(extra)} programs on top of the human set")
+
 # the best searched set per strategy, by the validation score the search itself saw
 by_strategy = {}
 for label, m in meta.items():
@@ -70,18 +84,6 @@ for strat, lst in by_strategy.items():
     ]
     meta[f"BASE+HUMAN+AUTO:{strat}"] = {"n_programs": len(sets[f"BASE+HUMAN+AUTO:{strat}"]),
                                         "strategy": strat, "from": best}
-
-if a.best_seed_only:
-    best_labels = {max(lst)[1] for lst in by_strategy.values()}
-    sets = {k: v for k, v in sets.items()
-            if not k.startswith("AUTO:") or k in best_labels}
-if a.only:
-    keep = set(a.only.split(","))
-    sets = {k: v for k, v in sets.items() if any(k.startswith(x) for x in keep)}
-if a.skip:
-    drop = set(a.skip.split(","))
-    sets = {k: v for k, v in sets.items() if not any(k.startswith(x) for x in drop)}
-print("arms:", ", ".join(sets))
 
 # horizons fitted by gradient descent, re-expressed as ordinary DSL programs
 kp = RUNS / "kernel_programs.json"
@@ -102,7 +104,19 @@ if kp.exists():
 sets["BASE+GRID"] = GRID
 meta["BASE+GRID"] = {"n_programs": len(GRID), "source": "systematic grid, no search"}
 
-users = D.sample_users(SCALES[a.scale])
+if a.best_seed_only:
+    best_labels = {max(lst)[1] for lst in by_strategy.values()}
+    sets = {k: v for k, v in sets.items()
+            if not k.startswith("AUTO:") or k in best_labels}
+if a.only:
+    keep = set(a.only.split(","))
+    sets = {k: v for k, v in sets.items() if any(k.startswith(x) for x in keep)}
+if a.skip:
+    drop = set(a.skip.split(","))
+    sets = {k: v for k, v in sets.items() if not any(k.startswith(x) for x in drop)}
+print("arms:", ", ".join(sets))
+
+users = D.sample_users(a.users or SCALES[a.scale])
 print(f"\nscale={a.scale}: {len(users)} users", flush=True)
 b = Bundle(users)
 
@@ -138,6 +152,7 @@ if not a.no_tune:
                                      indent=1, ensure_ascii=False))
         print(f"chosen on validation: {best_params}", flush=True)
 
+ref = "BASE+HUMAN"
 results, per_user = {}, {}
 for label, progs in sets.items():
     t0 = time.time()
@@ -159,6 +174,8 @@ for label, progs in sets.items():
         "top_features": imp.head(25).to_dicts(),
     }
     per_user[label] = pu.group_by("user_id").agg(pl.col("ndcg").mean())
+    safe = label.replace("+", "_").replace(":", "-")
+    per_user[label].write_parquet(RUNS / f"pufinal_{safe}_{a.scale}.parquet")
     print(f"  {label:28} nf={len(model.feature_name()):3d} val={val['ndcg@10']:.4f} "
           f"test={test['ndcg@10']:.4f} abs={test['ndcg@10_abs']:.4f} auc={test['auc']:.4f} "
           f"feat={tfeat:.0f}s train={ttrain}s", flush=True)
@@ -169,7 +186,6 @@ for label, progs in sets.items():
          "ranker_params": best_params, "tuning_trials": tuning,
          "results": results, "paired_vs_reference": {}}, indent=1, ensure_ascii=False))
 
-ref = "BASE+HUMAN"
 pairs = {}
 for label in results:
     if label == ref:

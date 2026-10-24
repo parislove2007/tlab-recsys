@@ -23,7 +23,7 @@ FIGURES = [
 ]
 
 parts = []
-for f in ("part1_method.md", "part2_research.md"):
+for f in ("part0_summary.md", "part1_method.md", "part2_research.md"):
     p = REPORTS / f
     if p.exists():
         parts.append(p.read_text().rstrip())
@@ -39,7 +39,8 @@ for name, cap in FIGURES:
 if len(figs) > 1:
     parts.append("\n".join(figs).rstrip())
 
-for f in ("part3_analysis.md", "part4_repro.md"):
+for f in ("part3c_comparison.md", "part3a_analysis.md", "part3b_horizons.md",
+          "part4_repro.md"):
     p = REPORTS / f
     if p.exists():
         parts.append(p.read_text().rstrip())

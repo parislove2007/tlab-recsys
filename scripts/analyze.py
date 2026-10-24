@@ -29,8 +29,19 @@ plt.rcParams.update({"figure.dpi": 140, "font.size": 9, "axes.grid": True,
 out = {}
 
 # ---------------------------------------------------------------- who benefits
-peruser = {p.stem.replace("peruser_", ""): p for p in RUNS.glob("peruser_*_main.parquet")}
-if {"BASE_HUMAN_main", "BASE_main"} <= set(peruser):
+WANT = ["BASE_main", "BASE_HUMAN_main", "AUTO-llm_recorded-s0_main",
+        "BASE_HUMAN_AUTO-llm_recorded_main", "BASE_KERNEL_main"]
+NICE = {"BASE_main": "базовые признаки",
+        "BASE_HUMAN_main": "+ ручной набор",
+        "AUTO-llm_recorded-s0_main": "+ найденный поиском",
+        "BASE_HUMAN_AUTO-llm_recorded_main": "+ ручной и найденный",
+        "BASE_KERNEL_main": "+ выученные горизонты"}
+peruser = {}
+for pat in ("peruser_*_main.parquet", "pufinal_*_main.parquet"):
+    for f in RUNS.glob(pat):
+        peruser[f.stem.split("_", 1)[1]] = f
+peruser = {NICE.get(k, k): v for k, v in peruser.items() if k in WANT}
+if len(peruser) >= 2:
     ev = D.load_events()
     hist = (D.history(ev, TEST_DATES[0]).group_by("user_id")
             .agg(pl.len().alias("n_hist")))
@@ -38,7 +49,9 @@ if {"BASE_HUMAN_main", "BASE_main"} <= set(peruser):
     labels = ["5-7", "8-14", "15-29", "30-59", "60+"]
 
     rows, series = [], {}
-    for tag, path in sorted(peruser.items()):
+    order = [NICE[k] for k in WANT if NICE.get(k) in peruser]
+    for tag in order:
+        path = peruser[tag]
         d = (pl.read_parquet(path).group_by("user_id").agg(pl.col("ndcg").mean())
              .join(hist, on="user_id", how="left").with_columns(pl.col("n_hist").fill_null(0)))
         buckets = []
@@ -54,7 +67,8 @@ if {"BASE_HUMAN_main", "BASE_main"} <= set(peruser):
         fig, ax = plt.subplots(figsize=(6.8, 3.6))
         x = np.arange(len(labels))
         w = 0.8 / len(series)
-        for i, (tag, b) in enumerate(sorted(series.items())):
+        for i, tag in enumerate(order):
+            b = series[tag]
             ax.bar(x + i * w - 0.4 + w / 2, [m for _, m in b], width=w, label=tag)
         ax.set_xticks(x)
         ax.set_xticklabels(labels)

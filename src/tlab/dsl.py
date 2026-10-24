@@ -633,3 +633,111 @@ class _GlobalView:
 
     def __getitem__(self, event):
         return self._e._global(event)
+
+
+# --------------------------------------------------------------------------
+# Rendering programs as SQL.
+#
+# The task description frames hand-made features as SQL over the event table.
+# A program in this language is exactly that, so it can be printed back as a
+# query. Useful for two things: a reviewer can read a generated feature and see
+# for themselves that the time filter only looks backwards, and the same query
+# can be run against a warehouse without this codebase.
+# --------------------------------------------------------------------------
+
+_SQL_AGG = {
+    "count": "COUNT(*)",
+    "nuniq_item": "COUNT(DISTINCT e.item_id)",
+    "nuniq_user": "COUNT(DISTINCT e.user_id)",
+    "nuniq_day": "COUNT(DISTINCT e.ts)",
+    "mean_pct": "AVG(e.watched_pct)",
+    "max_pct": "MAX(e.watched_pct)",
+    "std_pct": "STDDEV_SAMP(e.watched_pct)",
+    "sum_dur": "SUM(e.total_dur)",
+    "mean_dur": "AVG(e.total_dur)",
+    "recency": "MIN(DATE_DIFF('day', e.ts, :T))",
+    "mean_age": "AVG(DATE_DIFF('day', e.ts, :T))",
+}
+_SQL_EVENT = {"start": None, "watch": "e.watched_pct >= 30", "finish": "e.watched_pct >= 90"}
+
+
+def _sql_agg(p, alias="v"):
+    a, via, w, ag = p["anchor"], p.get("via"), p.get("window"), p["agg"]
+    where = ["e.ts < :T"]
+    if w is not None:
+        where.append(f"e.ts >= :T - INTERVAL '{w}' DAY")
+    if _SQL_EVENT[p["event"]]:
+        where.append(_SQL_EVENT[p["event"]])
+
+    if ag == "trend":
+        half = (w or 60) / 2
+        expr = (f"CAST(COUNT_IF(DATE_DIFF('day', e.ts, :T) < {half:g}) AS DOUBLE)"
+                f" / (COUNT_IF(DATE_DIFF('day', e.ts, :T) >= {half:g}) + 1)")
+    else:
+        expr = _SQL_AGG[ag]
+
+    joins, keys = [], []
+    if a == "user":
+        keys = ["e.user_id"]
+    elif a == "item":
+        keys = ["e.item_id"]
+    else:
+        joins.append(f"JOIN item_attr a ON a.item_id = e.item_id AND a.attr = '{via}'")
+        keys = ["e.user_id", "a.value"] if a == "attr" else ["a.value"]
+
+    sql = (f"SELECT {', '.join(keys)}, {expr} AS {alias}\n"
+           f"FROM events e\n"
+           + ("".join(f"{j}\n" for j in joins))
+           + "WHERE " + "\n  AND ".join(where) + "\n"
+           + f"GROUP BY {', '.join(keys)}")
+    return sql, keys
+
+
+def to_sql(p, indent=""):
+    """A readable SQL rendering of a program. `:T` is the prediction date."""
+    k = p["kind"]
+    if k in ("ratio", "mul"):
+        op = "/" if k == "ratio" else "*"
+        rhs = "(den.v + 1)" if k == "ratio" else "den.v"
+        return (f"-- {name(p)}\n"
+                f"WITH num AS (\n{to_sql(p['a'])}\n), den AS (\n{to_sql(p['b'])}\n)\n"
+                f"SELECT num.v {op} {rhs} AS value FROM num, den  -- joined on the shared keys")
+    if k == "decay":
+        a, via, w = p["anchor"], p.get("via"), None
+        base, keys = _sql_agg({**p, "agg": "count", "window": None}, "v")
+        lam = math.log(2.0) / float(p["halflife"])
+        base = base.replace("COUNT(*)",
+                            f"SUM(EXP(-{lam:.6g} * DATE_DIFF('day', e.ts, :T)))")
+        return f"-- {name(p)}\n{base}"
+    if k == "segment":
+        return (f"-- {name(p)}\n"
+                f"SELECT u.{p['dim']} AS seg, e.item_id, {_SQL_AGG.get(p['agg'], 'COUNT(*)')} AS v\n"
+                f"FROM events e JOIN users u ON u.user_id = e.user_id\n"
+                f"WHERE e.ts < :T"
+                + (f"\n  AND e.ts >= :T - INTERVAL '{p['window']}' DAY" if p.get("window") else "")
+                + (f"\n  AND {_SQL_EVENT[p['event']]}" if _SQL_EVENT[p["event"]] else "")
+                + f"\nGROUP BY u.{p['dim']}, e.item_id")
+    if k == "nested":
+        inner, _ = _sql_agg(p["inner"], "iv")
+        return (f"-- {name(p)}\n"
+                f"WITH item_level AS (\n{inner}\n), profile AS (\n"
+                f"  SELECT e.user_id, {p['outer'].upper()}(i.iv) AS prof\n"
+                f"  FROM events e JOIN item_level i ON i.item_id = e.item_id\n"
+                f"  WHERE e.ts < :T"
+                + (f" AND e.ts >= :T - INTERVAL '{p['window']}' DAY" if p.get("window") else "")
+                + "\n  GROUP BY e.user_id\n)\n"
+                f"SELECT c.user_id, c.item_id, "
+                + {"profile": "p.prof",
+                   "diff": "i.iv - p.prof",
+                   "ratio": "i.iv / (p.prof + 1)"}[p["compare"]]
+                + " AS value\nFROM candidates c\n"
+                "LEFT JOIN item_level i ON i.item_id = c.item_id\n"
+                "LEFT JOIN profile p ON p.user_id = c.user_id")
+    sql, keys = _sql_agg(p)
+    note = ""
+    if p.get("pool"):
+        note = (f"\n-- then, per candidate (user, item): "
+                f"{p['pool'].upper()} of v over the item's '{p['via']}' values")
+    if p.get("norm"):
+        note += f"\n-- then normalised with: {p['norm']}"
+    return f"-- {name(p)}\n{sql}{note}"

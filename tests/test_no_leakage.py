@@ -165,5 +165,23 @@ if __name__ == "__main__":
                test_candidates_are_a_function_of_the_past]:
         fn()
         print(f"  ok  {fn.__name__}")
+    n = test_every_program_renders_as_backward_looking_sql()
+    print(f"  ok  test_every_program_renders_as_backward_looking_sql ({n} programs)")
     got, chance = test_shuffled_labels_destroy_the_signal()
     print(f"  ok  test_shuffled_labels_destroy_the_signal (ndcg {got:.4f} vs chance {chance:.4f})")
+
+
+def test_every_program_renders_as_backward_looking_sql():
+    """A syntactic audit on top of the behavioural ones: the SQL rendering of
+    any program in the language must filter the event log one-sidedly."""
+    from tlab.dsl import to_sql
+    progs = _all_families()
+    bad = []
+    for p in progs:
+        q = to_sql(p)
+        if "e.ts < :T" not in q:
+            bad.append(name(p))
+        if ">= :T" in q.replace(">= :T -", ""):
+            bad.append(name(p) + " (looks forward)")
+    assert not bad, f"{len(bad)} of {len(progs)} renderings are suspect: {bad[:5]}"
+    return len(progs)

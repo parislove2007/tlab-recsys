@@ -25,6 +25,7 @@ from tlab.pipeline import Bundle
 ap = argparse.ArgumentParser()
 ap.add_argument("--scale", default="main")
 ap.add_argument("--auto-run", default="search_llm_recorded_none_s0.json")
+ap.add_argument("--users", type=int, default=0, help="override the scale, for smoke tests")
 a = ap.parse_args()
 
 HUMAN = human_programs()
@@ -44,7 +45,7 @@ if auto:
     sets["BASE+HUMAN+AUTO"] = merged
     sets["BASE+HUMAN+AUTO+EXT"] = merged + NEST
 
-users = D.sample_users(SCALES[a.scale])
+users = D.sample_users(a.users or SCALES[a.scale])
 b = Bundle(users)
 cached = RUNS / f"ranker_params_{a.scale}.json"
 best_params = json.loads(cached.read_text())["params"] if cached.exists() else None

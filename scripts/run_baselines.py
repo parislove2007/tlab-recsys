@@ -16,9 +16,10 @@ from tlab.pipeline import Bundle
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--scale", default="main")
+ap.add_argument("--users", type=int, default=0, help="override the scale, for smoke tests")
 a = ap.parse_args()
 
-users = D.sample_users(SCALES[a.scale])
+users = D.sample_users(a.users or SCALES[a.scale])
 print(f"scale={a.scale}: {len(users)} users", flush=True)
 b = Bundle(users)
 
@@ -29,11 +30,15 @@ for label, col, desc in [("rrf", "rrf", "rank fusion of the four generators"),
                          ("als", "als_score", "ALS score alone"),
                          ("popularity", "rank_pop", "14-day popularity alone")]:
     rows = []
+    rng = np.random.default_rng(0)
     for T in b.dates:
         cand = b.folds[T]["cand"]
         s = cand[col].cast(pl.Float64).fill_null(-1e9)
         if col == "rank_pop":
             s = -cand[col].cast(pl.Float64).fill_null(1e9)
+        # these signals have many ties; breaking them by the stored order would
+        # quietly borrow the ranking of the other generators
+        s = s + rng.random(cand.height) * 1e-6
         df = cand.select("user_id", "label").with_columns(s.alias("score"))
         if T in b.dates[-2:]:
             m, _ = ranking_metrics(df, pos_table=b.folds[T]["pos"])
