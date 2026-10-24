@@ -6,8 +6,35 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 import numpy as np
+from tlab import llm
 from tlab.config import RUNS, REPORTS, DATA
 
+
+def grammar_rate(run):
+    """How much of what the model proposed survived the validator.
+
+    Recomputed from the stored transcripts with the same parser the search
+    used, so it is available even for runs recorded before the counter existed.
+    """
+    d = RUNS / f"{run['strategy']}_{run['base']}_s{run['seed']}"
+    if run["strategy"] == "llm_recorded":
+        d = RUNS / f"llm_opus5_{run['base']}_s{run['seed']}"
+    if not d.is_dir():
+        return None
+    ok = bad = 0
+    for f in sorted(d.glob("gen*_response.txt")):
+        errs = []
+        ok += len(llm.parse_programs(f.read_text(), errs))
+        bad += len(errs)
+    return (ok, bad) if ok + bad else None
+
+REL_RU = {
+    "user_start": "активность пользователя", "user_watch": "глубокие просмотры пользователя",
+    "item_start": "спрос на объект", "item_watch": "глубокие просмотры объекта",
+    "item_finish": "досмотры объекта", "ugenre": "вкус к жанру",
+    "udirector": "вкус к режиссёру", "ukeyword": "вкус к теме",
+    "igenre": "спрос на жанр у всех",
+}
 NAMES = {"random": "случайный поиск", "evolution": "эволюционный поиск",
          "llm_local": "LLM-поиск, Qwen2.5-Coder 7B (локально)",
          "llm_recorded": "LLM-поиск, Opus 5", "human_pool": "ручной набор, тот же протокол отбора"}
@@ -81,15 +108,21 @@ if runs:
         nf = [t["n_features"] for r in lst for t in r["val_trace"][-1:]]
         wall = [r["wall_seconds"] for r in lst]
         progs = [r["evaluator_cost"]["programs"] for r in lst]
-        llm = [r["proposer_cost"] for r in lst]
-        tok = sum(c.get("tokens_out", 0) for c in llm)
+        llm_costs = [r["proposer_cost"] for r in lst]
+        calls = sum(c.get("calls", 0) for c in llm_costs)
+        rates = [grammar_rate(r) for r in lst]
+        rates = [x for x in rates if x]
+        ok = sum(x[0] for x in rates)
+        bad = sum(x[1] for x in rates)
+        final = (f"{np.mean(best):.4f} ± {np.std(best):.4f}" if len(lst) > 1
+                 else f"{np.mean(best):.4f}")
         rows.append([NAMES.get(strat, strat), len(lst), int(np.mean(progs)),
-                     f"{np.mean(at128):.4f}", f"{np.mean(at256):.4f}",
-                     f"{np.mean(best):.4f} ± {np.std(best):.4f}",
+                     f"{np.mean(at128):.4f}", f"{np.mean(at256):.4f}", final,
                      f"{np.mean(nf):.0f}", f"{np.mean(wall)/60:.1f}",
-                     f"{tok/max(1,len(lst)):.0f}" if tok else "—"])
+                     f"{calls / len(lst):.0f}" if calls else "—",
+                     f"{bad / (ok + bad) * 100:.0f}%" if rates else "—"])
     table(["стратегия", "сидов", "программ", "val@128", "val@256", "val финал",
-           "признаков", "мин. поиска", "ток. вывода LLM"], rows)
+           "признаков", "мин. поиска", "вызовов LLM", "отбраковано грамматикой"], rows)
     out.append("Бюджет у всех стратегий одинаковый: 15 поколений по 32 программы "
                "и ровно 30 обучений прокси-модели. Ручной набор прогнан через тот же "
                "протокол, но у него всего 69 программ, поэтому его строка короче.\n")
@@ -149,7 +182,7 @@ for f in sorted(glob.glob(str(RUNS / "kernels_*.json"))):
     d = json.loads(pathlib.Path(f).read_text())
     h("Выученные временные горизонты")
     table(["отношение", "быстрое ядро, дней полураспада", "медленное ядро, дней"],
-          [[k, v["half_life_days"][0], v["half_life_days"][1]]
+          [[REL_RU.get(k, k), v["half_life_days"][0], v["half_life_days"][1]]
            for k, v in d["learned_half_lives"].items()])
     h("Ядра внутри градиентного бустинга", 4)
     table(["набор", "признаков", "val NDCG@10", "test NDCG@10", "test абс."],

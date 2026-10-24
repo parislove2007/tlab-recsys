@@ -97,6 +97,15 @@ def fig_window_sweep():
     plt.close(fig)
 
 
+REL_RU = {
+    "user_start": "активность пользователя", "user_watch": "глубокие просмотры\nпользователя",
+    "item_start": "спрос на объект", "item_watch": "глубокие просмотры\nобъекта",
+    "item_finish": "досмотры объекта", "ugenre": "вкус к жанру",
+    "udirector": "вкус к режиссёру", "ukeyword": "вкус к теме",
+    "igenre": "спрос на жанр у всех",
+}
+
+
 def fig_half_lives():
     cands = sorted(glob.glob(str(RUNS / "kernels_*.json")))
     if not cands:
@@ -114,7 +123,7 @@ def fig_half_lives():
         ax.axvline(v, color="k", ls=ls, lw=1)
         ax.text(v, len(names) - 0.4, lab, fontsize=7, ha="center")
     ax.set_yticks(y)
-    ax.set_yticklabels(names)
+    ax.set_yticklabels([REL_RU.get(n, n) for n in names], fontsize=8)
     ax.set_xscale("log")
     ax.set_xlabel("выученный период полураспада, дней (log)")
     ax.set_title("Горизонт, который градиентный спуск выбирает сам,\nпротив окон, которые выбирает человек")

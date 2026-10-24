@@ -1,0 +1,142 @@
+[
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "event": "watch",
+  "via": "directors",
+  "window": 7,
+  "agg": "mean_pct",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "event": "finish",
+  "via": "decade",
+  "window": 60,
+  "agg": "sum_dur",
+  "norm": "share_item",
+  "pool": "min"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "event": "watch",
+  "via": "countries",
+  "window": 1,
+  "agg": "recency",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "event": "watch",
+  "via": "keywords",
+  "window": 180,
+  "agg": "nuniq_user",
+  "norm": "log1p",
+  "pool": "min"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "event": "watch",
+  "via": "studios",
+  "window": 90,
+  "agg": "std_pct",
+  "norm": "rank_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "event": "watch",
+  "via": "keywords",
+  "window": 60,
+  "agg": "recency",
+  "norm": "z_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "event": "finish",
+  "via": "countries",
+  "window": 90,
+  "agg": "std_pct",
+  "norm": "rank_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "event": "start",
+  "via": "genres",
+  "window": 180,
+  "agg": "nuniq_day",
+  "norm": "log1p",
+  "pool": "max"
+ },
+ {
+  "agg": "count",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "max",
+  "via": "actors",
+  "window": 90
+ },
+ {
+  "agg": "max_pct",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "rank_in_group",
+  "pool": "min",
+  "via": "decade",
+  "window": 90
+ },
+ {
+  "agg": "nuniq_item",
+  "anchor": "attr",
+  "event": "start",
+  "kind": "agg",
+  "norm": "share_user",
+  "pool": "sum",
+  "via": "keywords",
+  "window": 90
+ },
+ {
+  "agg": "nuniq_user",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "mean",
+  "via": "actors",
+  "window": 60
+ },
+ {
+  "agg": "max_pct",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "mean",
+  "via": "keywords",
+  "window": 90
+ },
+ {
+  "agg": "max_pct",
+  "anchor": "attr",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "mean",
+  "via": "countries",
+  "window": 30
+ }
+]

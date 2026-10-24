@@ -45,5 +45,24 @@ for f in ("part3c_comparison.md", "part3a_analysis.md", "part3b_horizons.md",
     if p.exists():
         parts.append(p.read_text().rstrip())
 
-(ROOT / "README.md").write_text("\n\n".join(parts) + "\n")
+body = "\n\n".join(parts) + "\n"
+
+
+def slug(title):
+    keep = "".join(c for c in title.lower() if c.isalnum() or c in " -")
+    return keep.strip().replace(" ", "-")
+
+
+toc = ["## Содержание", ""]
+for line in body.splitlines():
+    if line.startswith("## ") and line[3:] != "Содержание":
+        toc.append(f"- [{line[3:]}](#{slug(line[3:])})")
+    elif line.startswith("### "):
+        toc.append(f"  - [{line[4:]}](#{slug(line[4:])})")
+toc.append("")
+
+lines = body.splitlines()
+cut = next(i for i, l in enumerate(lines) if l.startswith("## "))
+body = "\n".join(lines[:cut] + toc + lines[cut:]) + "\n"
+(ROOT / "README.md").write_text(body)
 print(f"README.md: {len((ROOT / 'README.md').read_text().splitlines())} lines")
