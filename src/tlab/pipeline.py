@@ -123,10 +123,10 @@ class Bundle:
     def features(self, progs, max_cache=100):
         """Per-fold feature frames for the given programs, caching by program.
 
-        The engines' intermediate groupings are dropped after each fold: for
-        high-cardinality attributes a single cached grouping can be millions of
-        rows, and over a long search they are what exhausts memory. Finished
-        columns stay in `_cache`, which is what the search actually reuses.
+        The engines keep their intermediate groupings only while those stay
+        small; the large ones, which is what exhausts memory over a long search,
+        are rebuilt on demand. Finished columns stay in `_cache`, which is what
+        the search actually reuses.
         """
         out = {}
         for T in self.dates:
@@ -145,11 +145,6 @@ class Bundle:
                     col = got[nm]
                     self._cache[(T, canon(p))] = col
                     cols[nm] = col
-                e = f["engine"]
-                e._grp.clear()
-                e._own_attr.clear()
-                e._istats.clear()
-                e._seg.clear()
                 del got
             out[T] = pl.DataFrame({name(p): cols[name(p)] for p in progs})
         if len(self._cache) > max_cache * len(self.dates):

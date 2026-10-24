@@ -293,6 +293,12 @@ class FoldEngine:
     system would have available.
     """
 
+    # Grouped tables are kept only while they are small. An item-level table is
+    # 16k rows and expensive to rebuild, so caching it is pure gain; a
+    # (user, keyword) table is millions of rows and is what exhausts memory.
+    MAX_CACHED_ROWS = 300_000
+    MAX_CACHED_JOIN_ROWS = 1_200_000
+
     def __init__(self, events, T, item_attrs, users=None, join_cache=6, grp_cache=72,
                  user_attrs=None):
         if events.height and events["ts"].max() >= T:
@@ -344,11 +350,14 @@ class FoldEngine:
 
     def _own_joined(self, event, via):
         key = (event, via)
-        if key not in self._own_attr:
+        if key in self._own_attr:
+            return self._own_attr[key]
+        joined = self.u[event].join(self._attr_map(via), on="item_id")
+        if joined.height <= self.MAX_CACHED_JOIN_ROWS:
             if len(self._own_attr) >= self.join_cache:
                 self._own_attr.pop(next(iter(self._own_attr)))
-            self._own_attr[key] = self.u[event].join(self._attr_map(via), on="item_id")
-        return self._own_attr[key]
+            self._own_attr[key] = joined
+        return joined
 
     def _item_stats(self, event, window):
         key = (event, window)
@@ -391,9 +400,10 @@ class FoldEngine:
             out = df.group_by(keys).agg(AGG_EXPR[agg](window).alias("v"))
 
         out = out.with_columns(pl.col("v").cast(pl.Float32))
-        if len(self._grp) >= self.grp_cache:
-            self._grp.pop(next(iter(self._grp)))
-        self._grp[key] = out
+        if out.height <= self.MAX_CACHED_ROWS:
+            if len(self._grp) >= self.grp_cache:
+                self._grp.pop(next(iter(self._grp)))
+            self._grp[key] = out
         return out
 
     def _denominator(self, p, cand):
@@ -479,9 +489,10 @@ class FoldEngine:
         out = (df.group_by(keys)
                  .agg((pl.col("age").cast(pl.Float64) * (-lam)).exp().sum().alias("v"))
                  .with_columns(pl.col("v").cast(pl.Float32)))
-        if len(self._grp) >= self.grp_cache:
-            self._grp.pop(next(iter(self._grp)))
-        self._grp[key] = out
+        if out.height <= self.MAX_CACHED_ROWS:
+            if len(self._grp) >= self.grp_cache:
+                self._grp.pop(next(iter(self._grp)))
+            self._grp[key] = out
         return out
 
     def _eval_decay(self, p, cand):
@@ -531,9 +542,10 @@ class FoldEngine:
         out = (df.group_by("seg", "item_id")
                  .agg(AGG_EXPR[agg](window).alias("v"))
                  .with_columns(pl.col("v").cast(pl.Float32)))
-        if len(self._seg) >= 24:
-            self._seg.pop(next(iter(self._seg)))
-        self._seg[key] = out
+        if out.height <= self.MAX_CACHED_ROWS:
+            if len(self._seg) >= 24:
+                self._seg.pop(next(iter(self._seg)))
+            self._seg[key] = out
         return out
 
     def _eval_segment(self, p, cand):
