@@ -18,13 +18,17 @@ COLORS = {"random": "#8c8c8c", "evolution": "#1f77b4", "llm_local": "#ff7f0e",
           "llm_recorded": "#d62728", "human_pool": "#2ca02c", "grid": "#9467bd"}
 NAMES = {"random": "случайный поиск", "evolution": "эволюционный поиск",
          "llm_local": "LLM-поиск (Qwen2.5-Coder 7B)", "llm_recorded": "LLM-поиск (Opus 5)",
-         "human_pool": "ручной набор, тот же отбор"}
+         "human_pool": "ручной набор через тот же отбор (69 программ)"}
 
 
-def load_searches():
+def load_searches(base="none"):
+    """Runs grouped by strategy. A run that started from the hand-written set
+    is a different experiment and is kept apart."""
     runs = {}
     for f in sorted(glob.glob(str(RUNS / "search_*.json"))):
         r = json.loads(pathlib.Path(f).read_text())
+        if r.get("base", "none") != base:
+            continue
         runs.setdefault(r["strategy"], []).append(r)
     return runs
 
@@ -45,10 +49,6 @@ def fig_sample_efficiency(runs):
             ax.fill_between(grid, c.min(0), c.max(0), color=col, alpha=0.15, lw=0)
     base = min(t["val_ndcg"] for lst in runs.values() for r in lst for t in r["val_trace"])
     ax.axhline(base, color="k", ls=":", lw=1, label="базовая модель без DSL-признаков")
-    hp = [r for r in runs.get("human_pool", [])]
-    if hp:
-        ax.axhline(max(t["val_ndcg"] for t in hp[0]["val_trace"]), color=COLORS["human_pool"],
-                   ls="--", lw=1.2, label="ручной набор (69 программ)")
     ax.set_xlabel("программ предложено и скомпилировано (единица бюджета)")
     ax.set_ylabel("NDCG@10 на валидации")
     ax.set_title("Эффективность расходования бюджета разными стратегиями поиска")
@@ -71,8 +71,12 @@ def fig_window_sweep():
     cmap = plt.get_cmap("tab10")
     for i, rel in enumerate(rels):
         r = [x for x in rows if x["relation"] == rel]
-        y = [next(z["gain"] for z in r if (z["window"] or 365) == w) for w in xs]
+        y = np.array([next(z["gain"] for z in r if (z["window"] or 365) == w) for w in xs])
+        sd = np.array([next(z.get("val_sd", 0.0) for z in r if (z["window"] or 365) == w)
+                       for w in xs])
         ax.plot(xs, y, marker="o", ms=3.5, lw=1.4, color=cmap(i % 10), label=rel)
+        if sd.any():
+            ax.fill_between(xs, y - sd, y + sd, color=cmap(i % 10), alpha=0.12, lw=0)
         b = max(r, key=lambda z: z["gain"])
         ax.plot([b["window"] or 365], [b["gain"]], marker="*", ms=12,
                 color=cmap(i % 10), mec="k", mew=0.4, zorder=5)
@@ -83,8 +87,10 @@ def fig_window_sweep():
     ax.axvline(30, color="k", ls=":", lw=1)
     ax.set_xlabel("окно агрегации, дней (пунктир — типичный ручной выбор 7 и 30)")
     ax.set_ylabel("прирост NDCG@10 на валидации")
+    rep = d.get("repeats", 1)
     ax.set_title("Какое временное окно на самом деле нужно каждому отношению\n"
-                 "(звезда — оптимум; один признак добавляется к базовой модели)")
+                 f"(звезда — оптимум; один признак добавляется к базовой модели, "
+                 f"среднее по {rep} сидам бустинга)")
     ax.legend(fontsize=7, ncol=2)
     fig.tight_layout()
     fig.savefig(REPORTS / "fig_window_sweep.png")

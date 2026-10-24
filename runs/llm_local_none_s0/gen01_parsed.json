@@ -1,0 +1,172 @@
+[
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "studios",
+  "event": "start",
+  "window": 30,
+  "agg": "mean_dur",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "actors",
+  "event": "watch",
+  "window": 90,
+  "agg": "sum_dur",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "watch",
+  "window": 60,
+  "agg": "mean_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "age_rating",
+  "event": "finish",
+  "window": 90,
+  "agg": "max_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "studios",
+  "event": "start",
+  "window": 30,
+  "agg": "std_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "actors",
+  "event": "watch",
+  "window": 90,
+  "agg": "sum_dur",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "watch",
+  "window": 60,
+  "agg": "mean_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "age_rating",
+  "event": "finish",
+  "window": 90,
+  "agg": "max_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "studios",
+  "event": "start",
+  "window": 30,
+  "agg": "std_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "actors",
+  "event": "watch",
+  "window": 90,
+  "agg": "sum_dur",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "keywords",
+  "event": "watch",
+  "window": 60,
+  "agg": "mean_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "age_rating",
+  "event": "finish",
+  "window": 90,
+  "agg": "max_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "studios",
+  "event": "start",
+  "window": 30,
+  "agg": "std_pct",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "actors",
+  "event": "watch",
+  "window": 90,
+  "agg": "sum_dur",
+  "norm": null,
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr",
+  "via": "genres",
+  "event": "start",
+  "window": 7,
+  "agg": "mean_pct",
+  "norm": "z_in_group",
+  "pool": "mean"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "actors",
+  "event": "start",
+  "window": 1,
+  "agg": "sum_dur",
+  "norm": "rank_in_group",
+  "pool": "max"
+ },
+ {
+  "kind": "agg",
+  "anchor": "attr_item",
+  "via": "content_type",
+  "event": "finish",
+  "window": 60,
+  "agg": "trend",
+  "norm": "z_in_group",
+  "pool": "min"
+ }
+]

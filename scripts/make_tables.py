@@ -63,10 +63,11 @@ if wf.exists():
     out.append(f"Базовая модель без DSL-признаков: NDCG@10 = {d['base_val_ndcg']:.4f} на валидации.\n")
 
 # ---- search efficiency
-runs = {}
+runs, on_human = {}, {}
 for f in sorted(glob.glob(str(RUNS / "search_*.json"))):
     r = json.loads(pathlib.Path(f).read_text())
-    runs.setdefault(r["strategy"], []).append(r)
+    (runs if r.get("base", "none") == "none" else on_human).setdefault(
+        r["strategy"], []).append(r)
 if runs:
     h("Стратегии поиска при равном бюджете")
     rows = []
@@ -89,6 +90,22 @@ if runs:
                      f"{tok/max(1,len(lst)):.0f}" if tok else "—"])
     table(["стратегия", "сидов", "программ", "val@128", "val@256", "val финал",
            "признаков", "мин. поиска", "ток. вывода LLM"], rows)
+    out.append("Бюджет у всех стратегий одинаковый: 15 поколений по 32 программы "
+               "и ровно 30 обучений прокси-модели. Ручной набор прогнан через тот же "
+               "протокол, но у него всего 69 программ, поэтому его строка короче.\n")
+
+if on_human:
+    h("Поиск, начинающий с ручного набора")
+    rows = []
+    for strat, lst in sorted(on_human.items()):
+        for r in lst:
+            tr = r["val_trace"]
+            rows.append([NAMES.get(strat, strat), r["seed"], tr[0]["val_ndcg"],
+                         f"{tr[-1]['val_ndcg']:.4f}",
+                         f"{tr[-1]['val_ndcg'] - tr[0]['val_ndcg']:+.4f}",
+                         tr[-1]["n_features"], r["evaluator_cost"]["programs"]])
+    table(["стратегия", "сид", "val с ручным набором", "val после поиска",
+           "прирост", "добавлено признаков", "программ"], rows)
 
 # ---- final comparison
 for fname, title in [("final_main.json", "Итоговое сравнение на тесте (масштаб main)"),
@@ -140,6 +157,39 @@ for f in sorted(glob.glob(str(RUNS / "kernels_*.json"))):
             f4(v["test"]["ndcg@10_abs"])] for k, v in d["gbdt"].items()])
     out.append(f"Модель только на ядрах, без бустинга: test NDCG@10 = "
                f"{d['standalone']['test']['ndcg@10']:.4f}.\n")
+
+# ---- cost of each approach
+fin = RUNS / "final_main.json"
+if fin.exists() and runs:
+    d = json.loads(fin.read_text())
+    h("Вычислительные затраты")
+    rows = []
+    label_for = {"BASE+HUMAN": "ручной набор"}
+    for k, v in d["results"].items():
+        if k == "BASE":
+            continue
+        src = None
+        if k.startswith("AUTO:"):
+            src = k.split(":")[1]
+        name_ru = (NAMES.get(src, k) if src else label_for.get(k, k))
+        search_min = v.get("search_wall_seconds")
+        ec = v.get("evaluator_cost") or {}
+        pc = v.get("proposer_cost") or {}
+        rows.append([
+            name_ru + (f" (сид {v['seed']})" if "seed" in v else ""),
+            v.get("n_programs", 0), v["n_features"],
+            f"{search_min / 60:.1f}" if search_min else "—",
+            ec.get("programs", "—"),
+            f"{pc.get('calls', 0)}/{pc.get('tokens_out', 0) or '—'}" if pc else "—",
+            f"{v['feature_seconds']:.0f}", f"{v['train_seconds']:.0f}",
+            v.get("best_iteration", "—"),
+        ])
+    table(["подход", "прогр.", "призн.", "поиск, мин", "программ оценено",
+           "вызовов LLM / ток.", "призн., с", "обучение, с", "деревьев"], rows)
+    out.append("Счёт признаков и обучение измерены на основной выборке, поиск — "
+               "на дешёвой выборке 10 000 пользователей. Время счёта признаков — "
+               "это и есть стоимость подхода в продакшене: его платят на каждом "
+               "перестроении витрины.\n")
 
 # ---- language extension
 ext = RUNS / "nested_main.json"
