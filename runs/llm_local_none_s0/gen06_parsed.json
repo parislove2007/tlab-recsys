@@ -1,0 +1,202 @@
+[
+ {
+  "agg": "sum_dur",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "share_item",
+  "pool": "min",
+  "via": "decade",
+  "window": 14
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr",
+  "event": "start",
+  "kind": "agg",
+  "norm": "share_user",
+  "pool": "sum",
+  "via": "actors",
+  "window": 30
+ },
+ {
+  "agg": "mean_pct",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "max",
+  "via": "directors",
+  "window": 180
+ },
+ {
+  "agg": "count",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "max",
+  "via": "actors",
+  "window": 60
+ },
+ {
+  "agg": "sum_dur",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "share_item",
+  "pool": "min",
+  "via": "content_type",
+  "window": 1
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr",
+  "event": "start",
+  "kind": "agg",
+  "norm": "share_user",
+  "pool": "sum",
+  "via": "genres",
+  "window": 90
+ },
+ {
+  "agg": "mean_pct",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "max",
+  "via": "countries",
+  "window": 30
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr",
+  "event": "start",
+  "kind": "agg",
+  "norm": "share_user",
+  "pool": "sum",
+  "via": "keywords",
+  "window": 60
+ },
+ {
+  "agg": "mean_pct",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "max",
+  "via": "decade",
+  "window": 90
+ },
+ {
+  "agg": "mean_pct",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "max",
+  "via": "content_type",
+  "window": 60
+ },
+ {
+  "agg": "sum_dur",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "share_item",
+  "pool": "min",
+  "via": "actors",
+  "window": 3
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr",
+  "event": "start",
+  "kind": "agg",
+  "norm": "share_user",
+  "pool": "sum",
+  "via": "decade",
+  "window": 180
+ },
+ {
+  "agg": "sum_dur",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "share_item",
+  "pool": "min",
+  "via": "content_type",
+  "window": 1
+ },
+ {
+  "agg": "mean_pct",
+  "anchor": "item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": null,
+  "via": null,
+  "window": 7
+ },
+ {
+  "agg": "sum_dur",
+  "anchor": "user",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "share_user",
+  "pool": null,
+  "via": null,
+  "window": 30
+ },
+ {
+  "agg": "nuniq_day",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "max",
+  "via": "directors",
+  "window": 90
+ },
+ {
+  "agg": "recency",
+  "anchor": "attr_item",
+  "event": "start",
+  "kind": "agg",
+  "norm": "rank_in_group",
+  "pool": "min",
+  "via": "genres",
+  "window": 180
+ },
+ {
+  "agg": "mean_age",
+  "anchor": "attr_item",
+  "event": "watch",
+  "kind": "agg",
+  "norm": "log1p",
+  "pool": "max",
+  "via": "directors",
+  "window": 14
+ },
+ {
+  "agg": "sum_dur",
+  "anchor": "attr",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "z_in_group",
+  "pool": "min",
+  "via": "actors",
+  "window": 180
+ },
+ {
+  "agg": "mean_age",
+  "anchor": "attr_item",
+  "event": "finish",
+  "kind": "agg",
+  "norm": "rank_in_group",
+  "pool": "min",
+  "via": "countries",
+  "window": 30
+ }
+]
