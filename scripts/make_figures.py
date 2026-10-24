@@ -133,36 +133,93 @@ def fig_half_lives():
     plt.close(fig)
 
 
-def fig_final(path="final_main.json"):
+ARM_RU = {
+    "BASE": "базовые признаки (кандидаты и метаданные)",
+    "BASE+HUMAN": "ручной набор, 69 программ",
+    "BASE+GRID": "систематическая сетка, без поиска",
+    "BASE+KERNEL": "выученные горизонты",
+    "BASE+HUMAN+KERNEL": "ручной набор + выученные горизонты",
+    "BASE+AUTO+KERNEL": "найденный поиском + выученные горизонты",
+}
+STRAT_RU = {"evolution": "эволюционный поиск", "random": "случайный поиск",
+            "llm_recorded": "LLM-поиск, Opus 5", "llm_local": "LLM-поиск, 7B локально",
+            "human_pool": "ручной набор, другой порядок колонок"}
+
+
+def arm_label(k):
+    if k in ARM_RU:
+        return ARM_RU[k]
+    if k.startswith("AUTO:"):
+        _, strat, seed = k.split(":")
+        return f"{STRAT_RU.get(strat, strat)}, сид {seed[1:]}"
+    if k.startswith("HUMAN+SEARCH-ON-TOP:"):
+        strat = k.split(":")[1]
+        return f"ручной набор + поиск поверх него ({STRAT_RU.get(strat, strat)})"
+    if k.startswith("BASE+HUMAN+AUTO:"):
+        strat = k.split(":")[1]
+        if strat == "human_pool":
+            return "ручной набор сам с собой (вырожденный случай)"
+        return f"ручной + найденный ({STRAT_RU.get(strat, strat)})"
+    return k
+
+
+def arm_colour(k, ref):
+    if k == ref:
+        return "#2ca02c"
+    if k == "BASE":
+        return "#bdbdbd"
+    if "KERNEL" in k:
+        return "#9467bd"
+    if "GRID" in k:
+        return "#8c564b"
+    if "llm_recorded" in k:
+        return "#d62728"
+    if "llm_local" in k:
+        return "#ff7f0e"
+    if "evolution" in k:
+        return "#1f77b4"
+    if "random" in k:
+        return "#7f7f7f"
+    if "human_pool" in k:
+        return "#17becf"
+    return "#4c72b0"
+
+
+def fig_final(path="final_main.json", noise=0.006):
     f = RUNS / path
     if not f.exists():
         return
     d = json.loads(f.read_text())
-    res, pair = d["results"], d["paired_vs_reference"]
+    res, pair = d["results"], d.get("paired_vs_reference", {})
+    ref = d.get("reference", "BASE+HUMAN")
     order = sorted(res, key=lambda k: res[k]["test"]["ndcg@10"])
-    fig, ax = plt.subplots(figsize=(7.6, 0.42 * len(order) + 1.6))
+    vals = np.array([res[k]["test"]["ndcg@10"] for k in order])
+    err = np.array([[0.0, 0.0] if k not in pair else
+                    [max(0, pair[k]["delta"] - pair[k]["ci_low"]),
+                     max(0, pair[k]["ci_high"] - pair[k]["delta"])] for k in order]).T
+
+    fig, ax = plt.subplots(figsize=(10.4, 0.40 * len(order) + 1.9))
     y = np.arange(len(order))
-    vals = [res[k]["test"]["ndcg@10"] for k in order]
-    err = [[0, 0] if k not in pair else
-           [max(0, pair[k]["delta"] - pair[k]["ci_low"]), max(0, pair[k]["ci_high"] - pair[k]["delta"])]
-           for k in order]
-    cols = ["#2ca02c" if k == d["reference"] else
-            "#9e9e9e" if k == "BASE" else
-            "#d62728" if "llm_recorded" in k else
-            "#ff7f0e" if "llm_local" in k else
-            "#1f77b4" if "evolution" in k else
-            "#8c8c8c" if "random" in k else "#9467bd" for k in order]
-    ax.barh(y, vals, color=cols, height=0.62,
-            xerr=np.array(err).T, error_kw=dict(lw=0.9, capsize=2, ecolor="k"))
+    base = res[ref]["test"]["ndcg@10"] if ref in res else None
+    if base is not None:
+        ax.axvspan(base - noise, base + noise, color="#2ca02c", alpha=0.10, lw=0,
+                   label=f"ручной набор ± измеренный шум ({noise:.3f})")
+        ax.axvline(base, color="#2ca02c", lw=1.2, ls="--")
+    ax.barh(y, vals, color=[arm_colour(k, ref) for k in order], height=0.64,
+            xerr=err, error_kw=dict(lw=0.9, capsize=2, ecolor="#333333"))
+    span = vals.max() - vals.min()
     for i, k in enumerate(order):
-        n = res[k].get("n_programs", 0)
-        ax.text(vals[i] + 0.0012, i, f"{vals[i]:.4f}  ({n} прогр., {res[k]['n_features']} призн.)",
-                va="center", fontsize=7)
+        ax.text(vals[i] + err[1][i] + span * 0.02, i,
+                f"{vals[i]:.4f}   {res[k].get('n_programs', 0)} прогр. / "
+                f"{res[k]['n_features']} призн.", va="center", fontsize=7.2)
     ax.set_yticks(y)
-    ax.set_yticklabels(order, fontsize=7.5)
-    ax.set_xlim(min(vals) * 0.96, max(vals) * 1.09)
-    ax.set_xlabel("NDCG@10 на тесте (две отложенные недели)")
-    ax.set_title("Итоговое сравнение при одинаковых кандидатах, разбиении и базовых признаках")
+    ax.set_yticklabels([arm_label(k) for k in order], fontsize=8)
+    ax.set_xlim(vals.min() - span * 0.08, vals.max() + span * 0.62)
+    ax.set_xlabel("NDCG@10 на тесте, две отложенные недели")
+    ax.set_title("Одинаковые кандидаты, одинаковое разбиение, одинаковые базовые признаки\n"
+                 "усы — 95% интервал парного бутстрэпа относительно ручного набора",
+                 fontsize=9.5)
+    ax.legend(fontsize=7.5, loc="lower right")
     fig.tight_layout()
     fig.savefig(REPORTS / f"fig_{pathlib.Path(path).stem}.png")
     plt.close(fig)
