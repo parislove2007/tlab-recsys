@@ -14,7 +14,6 @@ import sys
 import time
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
-import numpy as np
 import polars as pl
 from tlab import dataset as D, rank
 from tlab.config import RUNS, SCALES

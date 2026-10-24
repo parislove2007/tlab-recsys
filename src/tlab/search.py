@@ -8,15 +8,10 @@ gain of the new block, one to decide whether to keep it. The test folds are
 never touched here; selection uses the validation fold only.
 """
 import gc
-import json
 import random
 import time
 
-import numpy as np
-import polars as pl
-
 from . import rank
-from .config import TOPK
 from .dsl import canon, name, validate, InvalidProgram
 
 PROXY = {
@@ -174,9 +169,6 @@ def evolution_proposer(space_mod, elite=12, p_cross=0.3, p_random=0.15):
 
 def pool_proposer(pool):
     """Draws from a fixed pool of programs instead of inventing them."""
-    import itertools
-    from .dsl import canon as _canon
-
     def f(st, rng):
         left = [p for p in pool if not st.seen(p)]
         if not left:

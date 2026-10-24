@@ -141,6 +141,55 @@ for f in sorted(glob.glob(str(RUNS / "kernels_*.json"))):
     out.append(f"Модель только на ядрах, без бустинга: test NDCG@10 = "
                f"{d['standalone']['test']['ndcg@10']:.4f}.\n")
 
+# ---- language extension
+ext = RUNS / "nested_main.json"
+if ext.exists():
+    d = json.loads(ext.read_text())
+    h("Расширение языка: то, что плоская грамматика не выражает")
+    out.append(f"Добавлено {d['n_nested']} программ двух семейств — агрегат от агрегата "
+               "(«популярнее ли этот объект того, что пользователь обычно смотрит») и "
+               "якорь по сегменту пользователя («популярно среди похожих по демографии»).\n")
+    table(["набор", "прогр.", "призн.", "val NDCG@10", "test NDCG@10",
+           "доля gain у новых семейств"],
+          [[k, v["n_programs"], v["n_features"], f4(v["val"]["ndcg@10"]),
+            f4(v["test"]["ndcg@10"]), f"{v.get('gain_share_of_nested', 0):.2f}"]
+           for k, v in d["results"].items()])
+    if d.get("paired"):
+        table(["сравнение", "Δ NDCG@10", "95% ДИ", "доля побед"],
+              [[k, f"{v['delta']:+.4f}", f"[{v['ci_low']:+.4f}; {v['ci_high']:+.4f}]",
+                f"{v['p_win']:.3f}"] for k, v in d["paired"].items()])
+    top = next((v["top_nested"] for v in d["results"].values() if v.get("top_nested")), [])
+    if top:
+        h("Самые полезные программы новых семейств", 4)
+        table(["признак", "вклад по сплитам"],
+              [[t["feature"], f"{t['gain']:,.0f}".replace(",", " ")] for t in top[:8]])
+
+# ---- extra analyses
+an = RUNS / "analysis.json"
+if an.exists():
+    d = json.loads(an.read_text())
+    if "by_history" in d:
+        h("Кому помогают признаки: разбивка по длине истории")
+        labels = d["by_history"]["labels"]
+        table(["набор"] + [f"{l} событий" for l in labels],
+              [[k] + [f"{m:.4f}" if m == m else "—" for _, m in v]
+               for k, v in d["by_history"]["series"].items()])
+        n0 = next(iter(d["by_history"]["series"].values()))
+        out.append("Размеры групп: " + ", ".join(
+            f"{labels[i]} — {int(n)}" for i, (n, _) in enumerate(n0)) + ".\n")
+    if "windows_chosen" in d:
+        h("Распределение выбранных горизонтов")
+        wk = ["1", "3", "7", "14", "30", "60", "90", "180", "None"]
+        table(["набор"] + [w if w != "None" else "вся история" for w in wk],
+              [[k] + [str(v.get(w, 0)) for w in wk] for k, v in d["windows_chosen"].items()])
+    if "proxy_fidelity" in d:
+        pf = d["proxy_fidelity"]
+        h("Верность дешёвого прокси")
+        out.append(f"Корреляция Спирмена между NDCG@10 на валидации выборки поиска "
+                   f"(10 000 юзеров) и NDCG@10 на тесте основной выборки по "
+                   f"{pf['n_sets']} найденным наборам: **{pf['spearman']:+.2f}** "
+                   f"(p = {pf['p_value']:.3f}).\n")
+
 REPORTS.mkdir(exist_ok=True)
 (REPORTS / "tables.md").write_text("\n".join(out))
 print("\n".join(out[:40]))

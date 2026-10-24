@@ -6,7 +6,7 @@ import numpy as np
 import polars as pl
 
 from .config import TOPK, SEED
-from .metrics import ranking_metrics, pointwise_metrics, paired_bootstrap
+from .metrics import ranking_metrics, pointwise_metrics
 from .pipeline import CAT_FEATURES
 
 PARAMS = {
@@ -69,18 +69,6 @@ def train_rank(parts, params=None, num_boost_round=800, early_stopping=60, quiet
     del dtr, dva
     gc.collect()
     return model, round(time.time() - t0, 2), cats
-
-
-def score_split(model, parts, split, with_pos=True):
-    res, per_user = {}, {}
-    for T, X, cand in parts[split]:
-        s = model.predict(X.to_pandas(), num_iteration=model.best_iteration)
-        df = cand.select("user_id", "label").with_columns(pl.Series("score", s))
-        pos = None
-        if with_pos:
-            pos = [f for f in parts[split] if f[0] == T][0][2]
-        res[T] = df
-    return res
 
 
 def evaluate(model, bundle, parts, split, k=TOPK):

@@ -19,7 +19,7 @@ import polars as pl
 from scipy.stats import spearmanr
 
 from tlab import dataset as D
-from tlab.config import RUNS, REPORTS, TEST_DATES, DATA
+from tlab.config import RUNS, REPORTS, TEST_DATES
 from tlab.dsl import WINDOWS
 from tlab.human import human_programs
 

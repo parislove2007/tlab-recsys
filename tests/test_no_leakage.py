@@ -18,7 +18,7 @@ import numpy as np
 import polars as pl
 
 from tlab import dataset as D, space, rank
-from tlab.config import DATA, TEST_DATES, TRAIN_DATES
+from tlab.config import DATA, TEST_DATES
 from tlab.dsl import FoldEngine, name
 from tlab import kernels
 from tlab.human import human_programs, grid_programs, nested_programs, segment_programs
