@@ -1,0 +1,54 @@
+{
+ "params": {
+  "num_leaves": 63,
+  "lambda_l2": 0.5,
+  "feature_fraction": 0.6
+ },
+ "trials": [
+  {
+   "params": {},
+   "val_ndcg": 0.2959419557480639,
+   "iters": 297,
+   "train_seconds": 180.43
+  },
+  {
+   "params": {
+    "num_leaves": 127,
+    "min_data_in_leaf": 40
+   },
+   "val_ndcg": 0.2945083765760661,
+   "iters": 208,
+   "train_seconds": 157.16
+  },
+  {
+   "params": {
+    "num_leaves": 31,
+    "min_data_in_leaf": 120,
+    "learning_rate": 0.08
+   },
+   "val_ndcg": 0.2916845997160895,
+   "iters": 165,
+   "train_seconds": 115.04
+  },
+  {
+   "params": {
+    "num_leaves": 63,
+    "learning_rate": 0.04,
+    "lambda_l2": 8.0
+   },
+   "val_ndcg": 0.2945882086761272,
+   "iters": 495,
+   "train_seconds": 279.62
+  },
+  {
+   "params": {
+    "num_leaves": 63,
+    "lambda_l2": 0.5,
+    "feature_fraction": 0.6
+   },
+   "val_ndcg": 0.29721362789520334,
+   "iters": 363,
+   "train_seconds": 200.35
+  }
+ ]
+}

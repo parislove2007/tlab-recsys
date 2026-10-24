@@ -45,7 +45,7 @@ if len(peruser) >= 2:
     ev = D.load_events()
     hist = (D.history(ev, TEST_DATES[0]).group_by("user_id")
             .agg(pl.len().alias("n_hist")))
-    edges = [5, 8, 15, 30, 60, 10 ** 9]
+    edges = [8, 15, 30, 60, 10 ** 9]
     labels = ["5-7", "8-14", "15-29", "30-59", "60+"]
 
     rows, series = [], {}

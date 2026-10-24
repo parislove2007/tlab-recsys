@@ -48,7 +48,7 @@ def measure(progs):
     for sd in SEEDS:
         model, _, _ = rank.train_rank(
             parts, params={**search.PROXY, "seed": sd, "bagging_seed": sd,
-                           "feature_fraction_seed": sd, "data_random_seed": sd},
+                           "feature_fraction_seed": sd},
             num_boost_round=300, early_stopping=30)
         m, _, _ = rank.evaluate(model, b, parts, "val")
         vals.append(m["ndcg@10"])

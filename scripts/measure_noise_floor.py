@@ -36,8 +36,9 @@ print(f"{len(users)} users, reference feature set, {a.seeds} booster seeds", flu
 runs, per_user = [], {}
 for sd in range(a.seeds):
     p = dict(params or {})
-    p.update({"seed": sd, "bagging_seed": sd, "feature_fraction_seed": sd,
-              "data_random_seed": sd})
+    # data_random_seed cannot be changed after the Dataset is built, so the
+    # run-to-run variation comes from the sampling seeds
+    p.update({"seed": sd, "bagging_seed": sd, "feature_fraction_seed": sd})
     model, _, _ = rank.train_rank(parts, params=p)
     test, _, pu = rank.evaluate(model, b, parts, "test")
     runs.append({"seed": sd, "test_ndcg": test["ndcg@10"], "test_auc": test["auc"],
