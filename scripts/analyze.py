@@ -91,10 +91,15 @@ def windows_of(progs):
     return c
 
 
+NAMES = {"random": "случайный поиск", "evolution": "эволюционный поиск",
+         "llm_local": "LLM-поиск, 7B локально", "llm_recorded": "LLM-поиск, Opus 5"}
 chosen = {"ручной набор": windows_of(human_programs())}
 for f in sorted(glob.glob(str(RUNS / "search_*.json"))):
     d = json.loads(pathlib.Path(f).read_text())
-    chosen[d["strategy"]] = windows_of(d["accepted"])
+    if d.get("base", "none") != "none" or d["strategy"] not in NAMES:
+        continue
+    chosen.setdefault(NAMES[d["strategy"]], collections.Counter())
+    chosen[NAMES[d["strategy"]]] += windows_of(d["accepted"])
 out["windows_chosen"] = {k: {str(w): v.get(w, 0) for w in WINDOWS} for k, v in chosen.items()}
 
 xs = [w if w is not None else 365 for w in WINDOWS]

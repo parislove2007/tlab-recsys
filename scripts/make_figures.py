@@ -65,7 +65,7 @@ def fig_window_sweep():
     d = json.loads(f.read_text())
     rows = d["rows"]
     rels = list(dict.fromkeys(r["relation"] for r in rows))
-    fig, ax = plt.subplots(figsize=(7.6, 4.4))
+    fig, ax = plt.subplots(figsize=(8.2, 4.4))
     xs = [1, 3, 7, 14, 30, 60, 90, 180, 365]
     labels = ["1", "3", "7", "14", "30", "60", "90", "180", "вся\nистория"]
     cmap = plt.get_cmap("tab10")
@@ -87,10 +87,9 @@ def fig_window_sweep():
     ax.axvline(30, color="k", ls=":", lw=1)
     ax.set_xlabel("окно агрегации, дней (пунктир — типичный ручной выбор 7 и 30)")
     ax.set_ylabel("прирост NDCG@10 на валидации")
-    rep = d.get("repeats", 1)
-    ax.set_title("Какое временное окно на самом деле нужно каждому отношению\n"
-                 f"(звезда — оптимум; один признак добавляется к базовой модели, "
-                 f"среднее по {rep} сидам бустинга)")
+    ax.set_title("Какое временное окно нужно каждому отношению\n"
+                 "звезда — оптимум; к базовой модели добавляется один признак",
+                 fontsize=9.5)
     ax.legend(fontsize=7, ncol=2)
     fig.tight_layout()
     fig.savefig(REPORTS / "fig_window_sweep.png")
