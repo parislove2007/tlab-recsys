@@ -22,11 +22,18 @@ FIGURES = [
      "Насколько валидация на выборке поиска предсказывает тест на основной выборке."),
 ]
 
+HEAD = ("# Автоматизация построения признаков для рекомендательного ранжирования\n\n"
+        "Отчёт по заданию T-Lab 2026, RecSys, задание 1. Датасет — KION от МТС.")
+
 parts = []
 for f in ("part0_summary.md", "part1_method.md", "part2_research.md"):
     p = REPORTS / f
-    if p.exists():
-        parts.append(p.read_text().rstrip())
+    if not p.exists():
+        continue
+    t = p.read_text().rstrip()
+    if t.startswith("# "):            # the title lives in the header, not mid-document
+        t = "\n".join(t.splitlines()[3:]).lstrip()
+    parts.append(t)
 
 tables = REPORTS / "tables.md"
 if tables.exists():
@@ -64,5 +71,5 @@ toc.append("")
 lines = body.splitlines()
 cut = next(i for i, l in enumerate(lines) if l.startswith("## "))
 body = "\n".join(lines[:cut] + toc + lines[cut:]) + "\n"
-(ROOT / "README.md").write_text(body)
+(ROOT / "README.md").write_text(HEAD + "\n\n" + body)
 print(f"README.md: {len((ROOT / 'README.md').read_text().splitlines())} lines")
